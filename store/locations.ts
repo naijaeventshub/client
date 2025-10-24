@@ -1,0 +1,16 @@
+import type { Location } from '../types/location';
+import { createEntity } from './entityFactory';
+
+export const locations = createEntity<Location>({
+  reducerPath: 'locationsApi',
+  entityEndpoint: 'locations',
+  entityName: 'Location',
+});
+
+export const {
+  useGetAllQuery,
+  useGetByIdQuery,
+  useCreateMutation: useCreateLocationMutation,
+  useUpdateMutation: useUpdateLocationMutation,
+  useDeleteMutation: useDeleteLocationMutation,
+} = locations;

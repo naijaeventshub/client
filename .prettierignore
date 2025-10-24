@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+dist
+build
+*.lock
+*.min.js
+*.min.css
+cypress/videos
+cypress/screenshots
