@@ -1,0 +1,126 @@
+/**
+ * Common label formatters for SelectWithFetch components
+ * These can be reused across different forms and components
+ */
+
+import { User } from "@/types/user";
+
+export interface BaseEntity {
+  name?: string;
+  title?: string;
+  uuid: string;
+}
+
+/**
+ * Format user display as "Full Name (email)" or fallback to email
+ */
+export const userFullNameEmailFormatter = (user: User): string => {
+  const firstName = user.first_name || "";
+  const lastName = user.last_name || "";
+  const email = user.email || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+  return fullName ? `${fullName} (${email})` : email;
+};
+
+/**
+ * Format user display as "Full Name" or fallback to email
+ */
+export const userFullNameFormatter = (user: User): string => {
+  const firstName = user.first_name || "";
+  const lastName = user.last_name || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+  return fullName || user.full_name || user.email || "";
+};
+
+/**
+ * Format user display as email only
+ */
+export const userEmailFormatter = (user: User): string => {
+  return user.email || "";
+};
+
+/**
+ * Format entity display with name and optional secondary info
+ */
+export const entityNameFormatter = (entity: BaseEntity): string => {
+  return entity.name || entity.title || "";
+};
+
+/**
+ * Format entity display with name and ID
+ */
+export const entityNameIdFormatter = (
+  entity: BaseEntity & { id?: string },
+): string => {
+  const name = entity.name || entity.title || "";
+  const id = entity.id || entity.uuid;
+  return name ? `${name} (${id})` : id;
+};
+
+/**
+ * Generic formatter that combines multiple fields with separator
+ */
+export const createCombinedFormatter = <T>(
+  fields: (keyof T)[],
+  separator: string = " - ",
+) => {
+  return (item: T): string => {
+    const values = fields
+      .map((field) => item[field])
+      .filter((value) => value && String(value).trim())
+      .map((value) => String(value).trim());
+
+    return values.join(separator);
+  };
+};
+
+/**
+ * Generic formatter that creates "Primary (Secondary)" format
+ */
+export const createPrimarySecondaryFormatter = <T>(
+  primaryField: keyof T,
+  secondaryField: keyof T,
+) => {
+  return (item: T): string => {
+    const primary = item[primaryField] ? String(item[primaryField]).trim() : "";
+    const secondary = item[secondaryField]
+      ? String(item[secondaryField]).trim()
+      : "";
+
+    if (primary && secondary) {
+      return `${primary} (${secondary})`;
+    }
+    return primary || secondary || "";
+  };
+};
+
+export const formatFirstCharToUpperCase = (str: string): string => {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const formatLabel = (str: string, substitute = " "): string => {
+  if (!str) return "";
+  return str.replaceAll(/_/g, substitute);
+};
+
+export const formatLabelToTitleCase = (
+  str: string,
+  substitute = " ",
+): string => {
+  if (!str) return "";
+  const formatted = formatLabel(str, substitute);
+  return formatted
+    .split(substitute)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(substitute);
+};
+
+export const formatLabelToSentenceCase = (
+  str: string,
+  substitute = " ",
+): string => {
+  if (!str) return "";
+  const formatted = formatLabel(str, substitute).toLowerCase();
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+};

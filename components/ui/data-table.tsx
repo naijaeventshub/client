@@ -1,0 +1,962 @@
+"use client";
+
+import { MonthYearPicker } from "@/components/dashboard/MonthYearPicker";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { SelectWithFetch } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { apiClient } from "@/lib/api-client";
+import {
+  type ColumnFiltersState,
+  type SortingState,
+  type VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ChevronDown, Download, Filter, RefreshCw, Search } from "lucide-react";
+import * as React from "react";
+import * as XLSX from "xlsx-js-style";
+import { type ColumnDef } from "./data-table-types";
+
+export type FilterOption = { label: string; value: string };
+export type FilterConfig =
+  | { type: "date"; label: string; param: string }
+  | { type: "month-year"; label: string; param: string }
+  | { type: "select"; label: string; param: string; options: FilterOption[] }
+  | {
+    type: "selectWithFetch";
+    label: string;
+    param: string;
+    fetchUrl: string;
+    valueKey?: string;
+    labelKey?: string;
+    searchParam?: string;
+    placeholder?: string;
+    labelFormatter?: (item: any) => string;
+  }
+  | { type: "text"; label: string; param: string }
+  | { type: "custom"; render: React.ReactNode }
+  | { type: "disableDefaultDateRange" };
+
+import { storeApis } from "@/store";
+import { skipToken } from "@reduxjs/toolkit/query";
+
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data?: TData[];
+  searchKey?: string;
+  searchPlaceholder?: string;
+  onRowClick?: (row: TData) => void;
+  store?: keyof typeof storeApis;
+  exportFileName?: string;
+  className?: string;
+  per_page?: number;
+  filters?: FilterConfig[];
+  params?: Record<string, any>; // URL parameters for parameterized endpoints
+  fixedQuery?: Record<string, any>; // Query string parameters
+  extraPath?: string; // Extra path for reports store
+  customExportFn?: (data: TData[], table: any, exportFileName: string, scope: "current_page" | "all") => void;
+  initialSorting?: SortingState; // Initial sorting state
+}
+
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+
+// Excel export helpers
+const getVisibleExportColumns = (table: any) =>
+  table
+    .getAllLeafColumns()
+    .filter(
+      (col: any) =>
+        col.getIsVisible() &&
+        col.id !== "actions" &&
+        typeof col.columnDef.header === "string"
+    );
+
+const extractValueForColumn = (col: any, dataItem: any) => {
+  let value = "";
+  if (typeof col.columnDef.exportValue === "function") {
+    value = String(col.columnDef.exportValue(dataItem));
+  } else if (col.columnDef.accessorKey) {
+    let extracted = col.columnDef.accessorKey
+      .split(".")
+      .reduce((acc: any, k: string) => (acc ? acc[k] : ""), dataItem);
+    if (extracted && typeof extracted === "object") {
+      value = JSON.stringify(extracted);
+    } else {
+      value = extracted ?? "";
+    }
+  }
+  return value;
+};
+
+const buildRowsFromItems = (table: any, items: any[], startIndex: number = 0) => {
+  const exportCols = getVisibleExportColumns(table);
+  return items.map((dataItem: any, idx: number) => {
+    const obj: { [key: string]: unknown } = {};
+    exportCols.forEach((col: any) => {
+      const header = col.columnDef.header as string;
+      if (header === "S/N") {
+        obj[header] = String(startIndex + idx + 1);
+      } else {
+        obj[header] = extractValueForColumn(col, dataItem);
+      }
+    });
+    return obj;
+  });
+};
+
+const buildWorksheetWithHeader = (title: string, headers: string[], rows: any[]) => {
+  const ws = XLSX.utils.aoa_to_sheet([]);
+  XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: "A1" });
+  XLSX.utils.sheet_add_json(ws, rows, { origin: "A3", skipHeader: false });
+  const lastColIndex = Math.max(0, headers.length - 1);
+  (ws as any)["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 1, c: lastColIndex } }];
+  if ((ws as any)["A1"]) {
+    ((ws as any)["A1"] as any).s = {
+      alignment: { horizontal: "center", vertical: "center" },
+      font: { sz: 24, bold: true },
+    } as any;
+  }
+  (ws as any)["!rows"] = [{ hpt: 36 }, { hpt: 18 }];
+  return ws;
+};
+
+const writeWorkbookToFile = (ws: any, exportFileName: string, scope: "current_page" | "all") => {
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+  const now = new Date();
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const datetime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}_${pad(now.getMinutes())}_${pad(now.getSeconds())}`;
+  const baseName = exportFileName.replace(/\.xlsx$/, "");
+  XLSX.writeFile(wb, `ORBIT_${baseName}_Report_${datetime}_${scope}.xlsx`);
+};
+
+const exportToExcel = (
+  _tableData: any[],
+  table: any,
+  exportFileName: string,
+  scope: "current_page" | "all" = "current_page",
+  customExportFn?: (data: any[], table: any, exportFileName: string, scope: "current_page" | "all") => void
+) => {
+  const currentItems = table.getRowModel().rows.map((r: any) => r.original);
+  if (customExportFn) {
+    customExportFn(currentItems, table, exportFileName, scope);
+    return;
+  }
+  const exportCols = getVisibleExportColumns(table);
+  const headers: string[] = exportCols.map((col: any) => col.columnDef.header as string);
+  const rows = buildRowsFromItems(table, currentItems, 0);
+  const ws = buildWorksheetWithHeader(exportFileName, headers, rows);
+  writeWorkbookToFile(ws, exportFileName, scope);
+};
+
+export const DataTable = React.forwardRef(function DataTable<TData, TValue>(
+  {
+    columns,
+    data: dataProp,
+    searchKey,
+    searchPlaceholder = "Search...",
+    onRowClick,
+    store,
+    exportFileName = "export",
+    className,
+    per_page,
+    filters = [],
+    params = {},
+    fixedQuery = {},
+    extraPath,
+    customExportFn,
+    initialSorting,
+  }: DataTableProps<TData, TValue>,
+  ref: React.Ref<{ refresh: () => void }>
+) {
+  const [sorting, setSorting] = React.useState<SortingState>(initialSorting || []);
+  const [paginationInput, setPaginationInput] = React.useState("");
+  const [paginationError, setPaginationError] = React.useState("");
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [pageIndex, setPageIndex] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(per_page ?? PAGE_SIZE_OPTIONS[0]);
+  const [refreshCount, setRefreshCount] = React.useState(0);
+  const [filterState, setFilterState] = React.useState<{ [key: string]: string }>({});
+  const [pendingFilterState, setPendingFilterState] = React.useState<{ [key: string]: string }>({});
+  const [activeFilters, setActiveFilters] = React.useState<{ [key: string]: boolean }>({});
+  const [filterDropdownOpen, setFilterDropdownOpen] = React.useState(false);
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      refresh: () => setRefreshCount((c) => c + 1),
+    }),
+    []
+  );
+
+  React.useEffect(() => {
+    if (filterDropdownOpen) {
+      setPendingFilterState(filterState);
+    }
+  }, [filterDropdownOpen, filterState]);
+
+  // Store-based data fetching
+  let tableData: TData[] = [];
+  let total = 0;
+  let pageCount = 1;
+  let loading = false;
+
+  // Memoized filter and store parameters
+  const filterParams = React.useMemo(
+    () =>
+      Object.entries(filterState)
+        .filter(([_, value]) => value && value !== "all")
+        .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}),
+    [filterState]
+  );
+
+  const storeParams = React.useMemo(() => {
+    if (!store) return undefined;
+
+    const baseParams = {
+      ...params,
+      ...fixedQuery,
+      ...filterParams,
+      page: pageIndex + 1,
+      per_page: pageSize,
+    };
+
+    // Add extraPath for reports store
+    if (extraPath) {
+      return {
+        ...baseParams,
+        extraPath,
+      };
+    }
+
+    return baseParams;
+  }, [store, params, fixedQuery, filterParams, pageIndex, pageSize, extraPath]);
+
+  const storeQuery = store ? storeApis[store]?.useGetAllQuery(storeParams ?? skipToken) : undefined;
+
+  // Only refetch when user clicks Refresh
+  React.useEffect(() => {
+    if (storeQuery && storeQuery.refetch && refreshCount > 0) {
+      storeQuery.refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshCount]);
+
+  if (store && storeQuery) {
+    const resp = storeQuery.data as any;
+    if (resp && Array.isArray(resp)) {
+      tableData = resp as TData[];
+      total = tableData.length;
+      pageCount = 1;
+    } else {
+      const items = resp?.data?.items ?? [];
+      tableData = items as TData[];
+      const pagination = resp?.meta?.pagination;
+      total = pagination?.total ? Number(pagination.total) : tableData.length;
+      pageCount = pagination?.last_page ? Number(pagination.last_page) : 1;
+    }
+    loading = storeQuery.isLoading || storeQuery.isFetching;
+  } else {
+    tableData = dataProp ?? [];
+    total = tableData.length;
+    pageCount = 1;
+    loading = false;
+  }
+
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+    manualPagination: !!store,
+    pageCount: pageCount,
+  });
+
+  // Set initial column visibility based on showByDefault field
+  React.useEffect(() => {
+    const visibilityUpdates: VisibilityState = {};
+    let hasUpdates = false;
+
+    columns.forEach((column) => {
+      const columnDef = column as any;
+      if (columnDef.showByDefault === false) {
+        // Find the column in the table by matching accessorKey or id
+        const tableColumn = table.getAllColumns().find(col =>
+          col.id === columnDef.id ||
+          col.id === columnDef.accessorKey ||
+          (columnDef.accessorKey && col.id.includes(columnDef.accessorKey.split('.')[0]))
+        );
+
+        if (tableColumn) {
+          visibilityUpdates[tableColumn.id] = false;
+          hasUpdates = true;
+        }
+      }
+    });
+
+    if (hasUpdates) {
+      setColumnVisibility(prev => ({ ...prev, ...visibilityUpdates }));
+    }
+  }, [columns, table]);
+
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    if (page < 0 || page >= pageCount) return;
+    setPageIndex(page);
+  };
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setPageIndex(0);
+  };
+
+  // Debounced search state for API/store mode
+  const [searchValue, setSearchValue] = React.useState("");
+
+  // Reset search/filter/page state only when store changes (prevents unnecessary refetch)
+  React.useEffect(() => {
+    setFilterState({});
+    setSearchValue("");
+    setPageIndex(0);
+  }, [store]);
+
+  // Debounced search for API/store mode
+  React.useEffect(() => {
+    if (!store) return;
+    const timeout = setTimeout(() => {
+      setFilterState((s) => ({ ...s, search: searchValue }));
+    }, 2000);
+    return () => clearTimeout(timeout);
+  }, [searchValue, store]);
+
+  // Memoized effective filters with default date range unless disabled
+  const effectiveFilters = React.useMemo(() => {
+    if (!filters || !Array.isArray(filters)) return [];
+    if (filters.some((f) => f.type === "disableDefaultDateRange")) {
+      return filters.filter((f) => f.type !== "disableDefaultDateRange");
+    }
+    return [
+      { type: "date", label: "Start Date", param: "start_date" },
+      { type: "date", label: "End Date", param: "end_date" },
+      ...filters.filter((f) => f.type !== "disableDefaultDateRange"),
+    ];
+  }, [filters]);
+
+  return (
+    <div
+      className={`w-full card bg-white shadow-md rounded-lg p-4${className ? " " + className : ""}`}
+    >
+      {/* Search, refresh, export, columns row */}
+      <div className="flex items-center justify-between py-4">
+        <div className="flex items-center space-x-2">
+          {searchKey && (
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={searchPlaceholder}
+                value={
+                  store
+                    ? searchValue
+                    : ((searchKey &&
+                      (table
+                        .getColumn(searchKey)
+                        ?.getFilterValue() as string)) ??
+                      "")
+                }
+                onChange={(event) => {
+                  if (store) {
+                    setSearchValue(event.target.value);
+                    setPageIndex(0);
+                  } else if (searchKey) {
+                    table
+                      .getColumn(searchKey)
+                      ?.setFilterValue(event.target.value);
+                    setPageIndex(0);
+                  }
+                }}
+                className="pl-8 max-w-sm"
+              />
+            </div>
+          )}
+          {
+            effectiveFilters?.length ?
+              <DropdownMenu open={filterDropdownOpen} onOpenChange={setFilterDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    {Object.values(activeFilters).some(Boolean) || Object.values(filterState).some(v => v && v !== "all") ? (
+                      <Filter className="mr-2 h-4 w-4 fill-current text-primary" />
+                    ) : (
+                      <Filter className="mr-2 h-4 w-4" />
+                    )}
+                    Filter
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  sideOffset={4}
+                  className="min-w-[18rem] p-2"
+                  onInteractOutside={(e) => {
+                    const target = e.target as Element;
+                    if (target.closest('[data-radix-select-content]') ||
+                      target.closest('[data-radix-popper-content-wrapper]')) {
+                      e.preventDefault();
+                    }
+                  }}
+                >
+                  {effectiveFilters.map((filter, idx) => {
+                    if (filter.type === "custom" && "render" in filter) {
+                      return (
+                        <div key={idx} className="flex flex-col min-w-[8rem] px-2 py-1">
+                          {filter.render}
+                        </div>
+                      );
+                    }
+                    if (
+                      "param" in filter &&
+                      "label" in filter &&
+                      (filter.type === "date" ||
+                        filter.type === "month-year" ||
+                        filter.type === "text" ||
+                        filter.type === "select" ||
+                        filter.type === "selectWithFetch")
+                    ) {
+                      return (
+                        <div key={filter.param} className="flex flex-col min-w-[8rem] px-2 py-2 border-b last:border-b-0">
+                          <DropdownMenuCheckboxItem
+                            checked={!!activeFilters[filter.param]}
+                            indicatorClassName="border border-[black]"
+                            onCheckedChange={(checked) => {
+                              setActiveFilters((prev) => ({
+                                ...prev,
+                                [filter.param]: checked,
+                              }));
+                              if (!checked) {
+                                setPendingFilterState((prev) => {
+                                  const next = { ...prev };
+                                  delete next[filter.param];
+                                  return next;
+                                });
+                              }
+                            }}
+                            className="font-medium"
+                          >
+                            {filter.label}
+                          </DropdownMenuCheckboxItem>
+                          {!!activeFilters[filter.param] && (
+                            <div className="mt-2 pl-6">
+                              {filter.type === "date" && (
+                                <Input
+                                  type="date"
+                                  className="w-full h-9 px-2 py-1 rounded border bg-gray-50 focus:bg-white focus:border-primary"
+                                  value={pendingFilterState[filter.param] || ""}
+                                  onChange={(e) =>
+                                    setPendingFilterState((s) => ({
+                                      ...s,
+                                      [filter.param]: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={filter.label}
+                                />
+                              )}
+                              {filter.type === "month-year" && (
+                                <div className="w-full">
+                                  <MonthYearPicker
+                                    month={pendingFilterState["month"] || ""}
+                                    year={pendingFilterState["year"] || ""}
+                                    onChange={(month, year) =>
+                                      setPendingFilterState((s) => ({
+                                        ...s,
+                                        "month": month,
+                                        "year": year,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              )}
+                              {filter.type === "select" && "options" in filter && (
+                                <select
+                                  className="w-full h-9 px-2 py-1 rounded text-[14px] border bg-gray-50 focus:bg-white focus:border-primary"
+                                  value={pendingFilterState[filter.param] || "all"}
+                                  onChange={(e) =>
+                                    setPendingFilterState((s) => ({
+                                      ...s,
+                                      [filter.param]: e.target.value,
+                                    }))
+                                  }
+                                  aria-label={filter.label}
+                                >
+                                  {(filter.options as FilterOption[]).map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                      {opt.label}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
+                              {filter.type === "text" && (
+                                <Input
+                                  type="text"
+                                  className="w-full h-9 px-2 py-1 rounded border bg-gray-50 focus:bg-white focus:border-primary"
+                                  value={pendingFilterState[filter.param] || ""}
+                                  onChange={(e) =>
+                                    setPendingFilterState((s) => ({
+                                      ...s,
+                                      [filter.param]: e.target.value,
+                                    }))
+                                  }
+                                  placeholder={filter.label}
+                                />
+                              )}
+                              {filter.type === "selectWithFetch" && "fetchUrl" in filter && (
+                                <div className="w-full">
+                                  <SelectWithFetch className="text-[14px]"
+                                    fetchUrl={filter.fetchUrl}
+                                    value={pendingFilterState[filter.param] || ""}
+                                    onChange={(value) =>
+                                      setPendingFilterState((s) => ({
+                                        ...s,
+                                        [filter.param]: value,
+                                      }))
+                                    }
+                                    valueKey={filter.valueKey}
+                                    labelKey={filter.labelKey}
+                                    searchParam={filter.searchParam}
+                                    placeholder={filter.placeholder || filter.label}
+                                    labelFormatter={filter.labelFormatter}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                  {Object.values(activeFilters).some(Boolean) && (
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setPendingFilterState({});
+                          setFilterState({});
+                          setActiveFilters({});
+                          setFilterDropdownOpen(false);
+                        }}
+                        data-testid="filter-reset"
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          setFilterState(pendingFilterState);
+                          setFilterDropdownOpen(false);
+                        }}
+                        data-testid="filter-apply"
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              : <></>
+          }
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setRefreshCount((c) => c + 1)}
+            title="Refresh"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuCheckboxItem
+                onClick={() => exportToExcel(tableData, table, exportFileName, "current_page", customExportFn)}
+              >
+                Export Current Page
+              </DropdownMenuCheckboxItem>
+              {/* Export All for store-based */}
+              {store && (
+                <DropdownMenuCheckboxItem
+                  onClick={async () => {
+                    let allRows: any[] = [];
+                    try {
+                      // Build endpoint manually using the same logic as entityFactory
+                      const exportParams = { ...params, ...fixedQuery, ...filterParams, page: 1, per_page: 10000 };
+
+                      // Get the entityEndpoint from the store API object
+                      const storeApi = storeApis[store];
+                      const entityEndpoint = (storeApi as any)?.entityEndpoint || store;
+
+                      // Substitute URL parameters (e.g., :id)
+                      let endpoint = entityEndpoint.replace(/:(\w+)/g, (match: string, paramName: string) => {
+                        return String((exportParams as any)[paramName] || match);
+                      });
+
+                      // Filter out URL parameters from query string
+                      const urlParamNames = entityEndpoint.match(/:(\w+)/g)?.map((p: string) => p.substring(1)) || [];
+                      const queryParams = Object.entries(exportParams)
+                        .filter(([key, value]) =>
+                          value !== undefined &&
+                          value !== null &&
+                          String(value) !== "" &&
+                          !urlParamNames.includes(key)
+                        )
+                        .reduce((acc, [key, value]) => {
+                          acc[key] = String(value);
+                          return acc;
+                        }, {} as Record<string, string>);
+
+                      // Build final URL
+                      let url = `/${endpoint}`;
+                      if (Object.keys(queryParams).length > 0) {
+                        const queryString = new URLSearchParams(queryParams).toString();
+                        url += `?${queryString}`;
+                      }
+
+                      // Make direct API call
+                      const res = await apiClient.get<any>(url);
+                      allRows = res.data?.items ?? res.data ?? [];
+                      allRows = allRows.map((item: any) => ({
+                        ...item,
+                        id: item.id ?? item.uuid ?? undefined,
+                      }));
+                    } catch (e) {
+                      alert("Failed to fetch all data for export");
+                      return;
+                    }
+                    if (customExportFn) {
+                      customExportFn(allRows, table, exportFileName, "all");
+                      return;
+                    }
+                    const rows = buildRowsFromItems(table, allRows);
+                    // Determine headers to know how many columns to span
+                    const exportCols = getVisibleExportColumns(table);
+                    const headers: string[] = exportCols.map((col: any) => col.columnDef.header as string);
+
+                    // Build worksheet with a 2-row merged header containing the export title
+                    const ws = buildWorksheetWithHeader(exportFileName, headers, rows);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                    const now = new Date();
+                    const pad = (n: number) => n.toString().padStart(2, "0");
+                    const datetime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}_${pad(now.getMinutes())}_${pad(now.getSeconds())}`;
+                    const baseName = exportFileName.replace(/\.xlsx$/, "");
+                    XLSX.writeFile(
+                      wb,
+                      `ORBIT_${baseName}_Report_${datetime}_all.xlsx`
+                    );
+                  }}
+                >
+                  Export All
+                </DropdownMenuCheckboxItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="max-h-[400px] overflow-auto">
+              {table
+                ?.getAllColumns()
+                ?.filter((column) => column.getCanHide())
+                ?.map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <div className="rounded-md border overflow-x-auto w-full">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  const width = (header.column.columnDef as any).width;
+                  const headerLabel = typeof (header.column.columnDef as any).header === "string"
+                    ? (header.column.columnDef as any).header as string
+                    : undefined;
+                  const parentLabel = (header as any).parent && typeof (header as any).parent.column?.columnDef?.header === "string"
+                    ? ((header as any).parent.column.columnDef.header as string)
+                    : undefined;
+                  const isDayGroup = !!headerLabel && /^Day\s+\d+$/.test(headerLabel);
+                  const isDayLeaf = !!parentLabel && /^Day\s+\d+$/.test(parentLabel || "");
+                  const isDailyLeaf = isDayLeaf && (header.column.id?.endsWith("_daily"));
+                  const isCumLeaf = isDayLeaf && (header.column.id?.endsWith("_cum"));
+                  return (
+                    <TableHead
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      onClick={
+                        header.column.getCanSort()
+                          ? header.column.getToggleSortingHandler()
+                          : undefined
+                      }
+                      className={
+                        (header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : "") +
+                        (isDayGroup ? " border border-gray-200" : "") +
+                        (isDayLeaf ? " border-y border-gray-200" : "") +
+                        (isDailyLeaf ? " border-l border-gray-300" : "") +
+                        (isCumLeaf ? " border-r border-gray-300" : "") +
+                        ((header.column.columnDef as any).className ? ` ${(header.column.columnDef as any).className}` : "")
+                      }
+                      style={{
+                        ...(width ? { minWidth: width } : {}),
+                        ...((header.column.columnDef as any).style || {})
+                      }}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <span className="flex items-center">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <span className="ml-1">
+                              {{
+                                asc: "▲",
+                                desc: "▼",
+                              }[header.column.getIsSorted() as string] ?? ""}
+                            </span>
+                          )}
+                        </span>
+                      )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  className={
+                    onRowClick ? "cursor-pointer hover:bg-muted/50" : ""
+                  }
+                  onClick={() => onRowClick?.(row.original)}
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    const width = (cell.column.columnDef as any).width;
+                    const colId = cell.column.id as string;
+                    const isDailyCell = /day_\d+_daily$/.test(colId);
+                    const isCumCell = /day_\d+_cum$/.test(colId);
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={(isDailyCell ? "border-l border-gray-300 " : "") + (isCumCell ? "border-r border-gray-300 " : "")}
+                        style={width ? { minWidth: width } : undefined}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No data.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <select
+            className="border rounded px-2 py-1 text-sm"
+            aria-label="Rows per page"
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+          >
+            {PAGE_SIZE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="text-sm text-muted-foreground">
+          Showing {total === 0 ? 0 : pageIndex * pageSize + 1} to{" "}
+          {Math.min((pageIndex + 1) * pageSize, total)} of {total} results
+        </div>
+        <div className="flex-col items-center space-x-2">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pageIndex - 1)}
+              disabled={pageIndex === 0}
+            >
+              Previous
+            </Button>
+            <div className="flex flex-col w-full">
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
+                  const page = i + Math.max(0, pageIndex - 2);
+                  if (page >= pageCount) return null;
+                  return (
+                    <Button
+                      key={page}
+                      variant={page === pageIndex ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                      className={page === pageIndex ? "btn-primary" : ""}
+                    >
+                      {page + 1}
+                    </Button>
+                  );
+                })}
+                {pageCount > 5 && (
+                  <input
+                    type="number"
+                    min={1}
+                    max={pageCount}
+                    value={paginationInput}
+                    onChange={e => {
+                      const value = e.target.value.replace(/\D/, "");
+                      setPaginationInput(value);
+                      const pageNum = Number(value);
+                      if (
+                        value &&
+                        (isNaN(pageNum) || pageNum < 1 || pageNum > pageCount)
+                      ) {
+                        setPaginationError(`Max page is ${pageCount}`);
+                      } else {
+                        setPaginationError("");
+                      }
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        const value = (e.target as HTMLInputElement).value;
+                        const pageNum = Number(value);
+                        if (
+                          !value ||
+                          isNaN(pageNum) ||
+                          pageNum < 1 ||
+                          pageNum > pageCount
+                        ) {
+                          setPaginationError(`Max page is ${pageCount}`);
+                        } else {
+                          setPaginationError("");
+                          handlePageChange(pageNum - 1);
+                          setPaginationInput("");
+                        }
+                      }
+                    }}
+                    onBlur={e => {
+                      setPaginationInput("");
+                      setPaginationError("");
+                    }}
+                    className="border rounded px-2 py-1 w-16 text-center mx-2"
+                    placeholder="Page"
+                  />
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pageIndex + 1)}
+                  disabled={pageIndex >= pageCount - 1}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </div>
+          {paginationError && (
+            <div className="w-full flex">
+              <span
+                className="text-xs text-red-500 mt-1"
+                style={{
+                  marginLeft: `calc(${Math.min(5, pageCount)} * 2.5rem + 2.5rem)`,
+                }}
+              >
+                {paginationError}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
