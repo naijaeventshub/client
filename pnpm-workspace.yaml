@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js
+  - cypress
+  - sharp
+  - unrs-resolver
