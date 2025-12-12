@@ -11,7 +11,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['localhost', process.env.NEXT_PUBLIC_API_URL],
+    domains: ['localhost', process.env.NEXT_PUBLIC_API_URL || 'localhost'].filter(Boolean),
     unoptimized: true,
   },
   reactStrictMode: false,

@@ -28,6 +28,10 @@ yarn-error.log*
 next-env.d.ts
 .DS_Store
 
+# Development tracking files (local use only)
+WORK_IN_PROGRESS.md
+COMPLETED_WORK.md
+
 
 # domain conig
 nginx.conf
