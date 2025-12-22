@@ -1,100 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import { User, Phone } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Phone, User } from "lucide-react";
+import Image from "next/image";
+import userIcon from "@/images/user-2.png";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface FormData {
+  phone: string;
+  gender: string;
+}
+
+const INITIAL_STATE: FormData = {
+  phone: "",
+  gender: "",
+};
+
+const GENDER_OPTIONS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "other", label: "Other" },
+  { value: "prefer-not-to-say", label: "Prefer not to say" },
+];
+
+const ICON_BG_COLOR = "rgba(238, 242, 255, 1)";
 
 export default function WelcomeBasicInfo() {
-  const [formData, setFormData] = useState({
-    phone: "",
-    gender: "",
-  });
+  const [formData, setFormData] = useState<FormData>(INITIAL_STATE);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
+  const handlePhoneChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      setFormData((prev) => ({
+        ...prev,
+        phone: value,
+      }));
+    },
+    []
+  );
+
+  const handleGenderChange = useCallback((value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      gender: value,
     }));
-  };
+  }, []);
 
   return (
     <div className="w-full text-center">
-      {/* Icon Container */}
-      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 mb-6">
-        <User className="w-8 h-8 text-purple-600" />
+      <div
+        className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6"
+        style={{ backgroundColor: ICON_BG_COLOR }}
+      >
+        <Image
+          src={userIcon}
+          alt="User profile"
+          width={32}
+          height={32}
+          priority
+        />
       </div>
 
-      {/* Heading */}
-      <h2 className="text-3xl font-bold text-gray-900 mb-2">
+      <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
         Tell Us More About You.
       </h2>
 
-      {/* Subtext */}
-      <p className="text-gray-600 text-sm mb-10">
+      <p className="text-gray-600 text-xs md:text-sm mb-10">
         We'll tailor every feature to work for you
       </p>
 
-      {/* Form */}
       <div className="space-y-4">
-        {/* Two-Column Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Phone Number */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Phone Number Field */}
           <div className="text-left">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               Phone Number
             </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+            <div className="relative flex items-center">
+              <Phone className="absolute left-3 h-5 w-5 text-gray-400 flex-shrink-0" />
               <input
                 type="tel"
-                name="phone"
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 placeholder="Enter your phone number"
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none bg-white"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none bg-white text-xs md:text-sm transition-colors"
               />
             </div>
           </div>
 
-          {/* Gender Dropdown */}
+          {/* Gender Selection Field */}
           <div className="text-left">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               Gender
             </label>
-            <div className="relative">
-              <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-              <select
-                name="gender"
+            <div className="relative flex items-center">
+              <User className="absolute left-3 h-5 w-5 text-gray-400 flex-shrink-0 z-10" />
+              <Select
                 value={formData.gender}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent outline-none bg-white appearance-none cursor-pointer"
+                onValueChange={handleGenderChange}
               >
-                <option value="">Select</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-                <option value="prefer-not-to-say">Prefer not to say</option>
-              </select>
-              {/* Dropdown Arrow */}
-              <svg
-                className="absolute right-3 top-3.5 h-5 w-5 text-gray-400 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
-                />
-              </svg>
+                <SelectTrigger className="w-full pl-10 pr-4 py-2 rounded-full border-gray-300 focus:ring-purple-600">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  {GENDER_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Helper Text */}
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-2xs md:text-xs text-gray-400 mt-2">
               Why we collect your information
             </p>
           </div>
