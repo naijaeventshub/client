@@ -63,7 +63,7 @@ export default function OnboardingPage() {
 
       <div className="w-full lg:w-[60%] flex flex-col overflow-y-auto">
         {/* Stepper Section */}
-        <div className="px-8 md:px-12 pt-8 pb-6 border-b border-gray-200">
+        <div className="px-8 md:px-12 pt-8 pb-6">
           <div className="flex items-start justify-between gap-0 max-w-4xl">
             {STEPS.map((step, index) => (
               <div
@@ -121,7 +121,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="px-8 md:px-12 pb-8 border-t border-gray-200">
+        <div className="px-8 md:px-12 pb-8">
           <div className="max-w-2xl mx-auto flex justify-between items-center gap-4 pt-6">
             <button
               onClick={handlePrevious}
@@ -132,13 +132,30 @@ export default function OnboardingPage() {
               Back
             </button>
 
-            <button
-              onClick={handleNext}
-              style={{ backgroundColor: PRIMARY_COLOR }}
-              className="px-8 py-3 text-white rounded-full font-medium hover:opacity-90 transition-colors"
-            >
-              {currentIndex === STEPS.length - 1 ? "Complete" : "Continue"}
-            </button>
+            {currentStep === "addressBilling" && (
+              <div className="flex gap-3">
+                <button className="px-6 py-3 border border-gray-400 rounded-full text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+                  I'll do this later
+                </button>
+                <button
+                  onClick={handleNext}
+                  style={{ backgroundColor: PRIMARY_COLOR }}
+                  className="px-8 py-3 text-white rounded-full font-medium hover:opacity-90 transition-colors"
+                >
+                  Continue
+                </button>
+              </div>
+            )}
+
+            {currentStep !== "addressBilling" && (
+              <button
+                onClick={handleNext}
+                style={{ backgroundColor: PRIMARY_COLOR }}
+                className="px-8 py-3 text-white rounded-full font-medium hover:opacity-90 transition-colors"
+              >
+                {currentIndex === STEPS.length - 1 ? "Complete" : "Continue"}
+              </button>
+            )}
           </div>
         </div>
       </div>
