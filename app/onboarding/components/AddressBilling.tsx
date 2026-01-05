@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Home, CreditCard, HelpCircle, ChevronDown } from "lucide-react";
+import { HelpCircle } from "lucide-react";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -9,6 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import navigationArrow from "@/images/navigation-arrow.png";
+import home05 from "@/images/home-05.png";
+import packageMoving from "@/images/package-moving.png";
+import countryImage from "@/images/country-image.png";
+import stateImage from "@/images/state-image.png";
 
 interface FormData {
   homeAddress: string;
@@ -45,10 +51,9 @@ export default function AddressBilling() {
 
   const handleHomeAddressChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
       setFormData((prev) => ({
         ...prev,
-        homeAddress: value,
+        homeAddress: e.target.value,
       }));
     },
     []
@@ -56,10 +61,9 @@ export default function AddressBilling() {
 
   const handleBillingAddressChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
       setFormData((prev) => ({
         ...prev,
-        billingAddress: value,
+        billingAddress: e.target.value,
       }));
     },
     []
@@ -85,7 +89,13 @@ export default function AddressBilling() {
         className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6"
         style={{ backgroundColor: ICON_BG_COLOR }}
       >
-        <Home className="h-8 w-8 text-purple-600" />
+        <Image
+          src={navigationArrow}
+          alt="Where are you based"
+          width={32}
+          height={32}
+          priority
+        />
       </div>
 
       <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
@@ -97,15 +107,19 @@ export default function AddressBilling() {
       </p>
 
       <div className="space-y-4">
-        {/* Vertical Stack - Home Address and Billing Address */}
         <div className="space-y-4">
-          {/* Home Address Field */}
           <div className="text-left">
             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               Home Address
             </label>
             <div className="relative flex items-center">
-              <Home className="absolute left-3 h-5 w-5 text-gray-400 flex-shrink-0" />
+              <Image
+                src={home05}
+                alt="Home"
+                width={20}
+                height={20}
+                className="absolute left-3 h-5 w-5 flex-shrink-0"
+              />
               <input
                 type="text"
                 value={formData.homeAddress}
@@ -116,13 +130,18 @@ export default function AddressBilling() {
             </div>
           </div>
 
-          {/* Billing Address Field */}
           <div className="text-left">
             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               Billing Address
             </label>
             <div className="relative flex items-center">
-              <CreditCard className="absolute left-3 h-5 w-5 text-gray-400 flex-shrink-0 z-10" />
+              <Image
+                src={packageMoving}
+                alt="Billing"
+                width={20}
+                height={20}
+                className="absolute left-3 h-5 w-5 flex-shrink-0 z-10"
+              />
               <input
                 type="text"
                 value={formData.billingAddress}
@@ -135,14 +154,19 @@ export default function AddressBilling() {
           </div>
         </div>
 
-        {/* Horizontal Stack - Country and State */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Country Field */}
           <div className="text-left">
             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               Country
             </label>
             <div className="relative flex items-center">
+              <Image
+                src={countryImage}
+                alt="Country"
+                width={20}
+                height={20}
+                className="absolute left-3 h-5 w-5 flex-shrink-0 z-10"
+              />
               <Select
                 value={formData.country}
                 onValueChange={handleCountryChange}
@@ -161,12 +185,18 @@ export default function AddressBilling() {
             </div>
           </div>
 
-          {/* State Field */}
           <div className="text-left">
             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
               State
             </label>
             <div className="relative flex items-center">
+              <Image
+                src={stateImage}
+                alt="State"
+                width={20}
+                height={20}
+                className="absolute left-3 h-5 w-5 flex-shrink-0 z-10"
+              />
               <Select value={formData.state} onValueChange={handleStateChange}>
                 <SelectTrigger className="w-full pl-10 pr-4 py-2 rounded-full border-gray-300 focus:ring-purple-600">
                   <SelectValue placeholder="Select" />
