@@ -19,7 +19,7 @@ const STEPS = [
   { id: "notifications", label: "Notifications & Finish" },
 ] as const;
 
-const STEP_COMPONENTS: Record<Step, React.ComponentType> = {
+const STEP_COMPONENTS: Record<Step, React.ComponentType<any>> = {
   welcome: WelcomeBasicInfo,
   addressBilling: AddressBilling,
   interests: Interests,
@@ -32,9 +32,12 @@ const PENDING_COLOR = "rgb(209, 213, 219)";
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<Step>("welcome");
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   const currentIndex = STEPS.findIndex((step) => step.id === currentStep);
   const CurrentComponent = STEP_COMPONENTS[currentStep];
+  const isInterestsStep = currentStep === "interests";
+  const canContinueFromInterests = selectedInterests.length >= 2;
 
   const handleNext = () => {
     if (currentIndex < STEPS.length - 1) {
@@ -124,13 +127,44 @@ export default function OnboardingPage() {
 
         <div className="flex-1 flex flex-col justify-center px-8 md:px-12 py-12">
           <div className="max-w-2xl mx-auto w-full">
-            {CurrentComponent && <CurrentComponent />}
+            {isInterestsStep ? (
+              <Interests onSelectionChange={setSelectedInterests} />
+            ) : (
+              CurrentComponent && <CurrentComponent />
+            )}
           </div>
         </div>
 
         <div className="px-8 md:px-12 pb-8">
           <div className="max-w-2xl mx-auto pt-6">
-            {currentStep === "addressBilling" ? (
+            {isInterestsStep ? (
+              <div className="flex flex-col md:flex-row justify-center items-center gap-3 md:gap-2.5">
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentIndex === 0}
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-gray-400 rounded-full text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  disabled={!canContinueFromInterests}
+                  style={{
+                    backgroundColor: canContinueFromInterests
+                      ? PRIMARY_COLOR
+                      : undefined,
+                  }}
+                  className={`px-8 py-3 rounded-full font-medium transition-colors ${
+                    canContinueFromInterests
+                      ? "text-white hover:opacity-90"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Continue
+                </button>
+              </div>
+            ) : currentStep === "addressBilling" ? (
               <div className="flex justify-between items-start md:items-center gap-4">
                 <button
                   onClick={handlePrevious}
