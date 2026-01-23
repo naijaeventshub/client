@@ -88,19 +88,19 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex overflow-hidden">
+    <div className="h-screen flex overflow-hidden">
       {/* Left Side - Form Section */}
-      <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center px-6 sm:px-8 lg:px-12 py-12">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 bg-white flex flex-col items-center px-6 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="w-full max-w-md my-auto py-4">
           {/* Logo and Header - Centered */}
-          <div className="mb-8 text-center">
-            <div className="flex justify-center mb-6">
+          <div className="mb-6 lg:mb-8 text-center">
+            <div className="flex justify-center mb-4 lg:mb-6">
               <Image src={Logo} alt="KONFERA" width={120} priority />
             </div>
-            <h1 className="text-2xl sm:text-[30px] lg:text-[30px] leading-[38px] font-bold text-gray-900 mb-3 whitespace-nowrap">
+            <h1 className="text-2xl sm:text-[30px] lg:text-[30px] leading-[38px] font-bold text-gray-900 mb-2 lg:mb-3 whitespace-nowrap">
               Let's create your account
             </h1>
-            <p className="text-gray-500 text-base">
+            <p className="text-gray-500 text-sm lg:text-base">
               Sign up for free and get started.
             </p>
           </div>
@@ -112,7 +112,7 @@ export default function SignupPage() {
             onSubmit={handleSubmit}
           >
             {({ values, handleChange, handleBlur, isValid }) => (
-              <Form className="space-y-6">
+              <Form className="space-y-4 lg:space-y-6">
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
@@ -248,7 +248,7 @@ export default function SignupPage() {
                 <Button
                   type="submit"
                   disabled={isLoading || !isValid}
-                  className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors mt-8"
+                  className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors mt-6 lg:mt-8"
                   style={{ backgroundColor: "rgba(95, 0, 208, 1)" }}
                 >
                   {isLoading ? "Creating account..." : "Sign Up"}
@@ -265,7 +265,7 @@ export default function SignupPage() {
                 </Button>
 
                 {/* Login Link */}
-                <p className="text-center text-gray-600 text-sm mt-6">
+                <p className="text-center text-gray-600 text-sm mt-4 lg:mt-6">
                   Already have an account?{" "}
                   <Link
                     href="/auth/login"

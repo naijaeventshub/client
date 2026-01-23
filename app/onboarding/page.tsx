@@ -66,7 +66,7 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      <div className="w-full lg:w-[60%] flex flex-col overflow-y-auto">
+      <div className="w-full lg:w-[60%] flex flex-col overflow-y-auto scrollbar-hide">
         <div className="px-8 md:px-12 pt-8 pb-6">
           <div className="flex items-start justify-between gap-0 max-w-4xl">
             {STEPS.map((step, index) => {
@@ -126,7 +126,9 @@ export default function OnboardingPage() {
         </div>
 
         <div className="flex-1 flex flex-col justify-center px-8 md:px-12 py-12">
-          <div className="max-w-2xl mx-auto w-full">
+          <div
+            className={`max-w-2xl mx-auto w-full ${isInterestsStep ? "min-h-[400px] md:min-h-0" : ""}`}
+          >
             {isInterestsStep ? (
               <Interests onSelectionChange={setSelectedInterests} />
             ) : (
@@ -138,7 +140,7 @@ export default function OnboardingPage() {
         <div className="px-8 md:px-12 pb-8">
           <div className="max-w-2xl mx-auto pt-6">
             {isInterestsStep ? (
-              <div className="flex flex-col md:flex-row justify-center items-center gap-3 md:gap-2.5">
+              <div className="flex justify-between items-center gap-3 md:justify-center md:gap-2.5">
                 <button
                   onClick={handlePrevious}
                   disabled={currentIndex === 0}
@@ -186,6 +188,24 @@ export default function OnboardingPage() {
                     Continue
                   </button>
                 </div>
+              </div>
+            ) : currentStep === "notifications" ? (
+              <div className="flex justify-between items-center gap-3 md:justify-center md:gap-2.5">
+                <button
+                  onClick={handlePrevious}
+                  disabled={currentIndex === 0}
+                  className="inline-flex items-center gap-2 px-6 py-3 border border-gray-400 rounded-full text-gray-700 font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back
+                </button>
+                <button
+                  onClick={handleNext}
+                  style={{ backgroundColor: PRIMARY_COLOR }}
+                  className="px-8 py-3 text-white rounded-full font-medium hover:opacity-90 transition-colors"
+                >
+                  Finish Setup
+                </button>
               </div>
             ) : (
               <div className="flex justify-between items-center gap-4">

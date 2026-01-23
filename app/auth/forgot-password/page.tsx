@@ -63,19 +63,19 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex overflow-hidden">
+    <div className="h-screen flex overflow-hidden">
       {/* Left Side - Form Section */}
-      <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center px-6 sm:px-8 lg:px-12 py-12">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 bg-white flex flex-col items-center px-6 sm:px-8 lg:px-12 py-6 sm:py-8 lg:py-12 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="w-full max-w-md my-auto py-4">
           {/* Logo and Header - Centered */}
-          <div className="mb-8 text-center">
-            <div className="flex justify-center mb-6">
+          <div className="mb-6 lg:mb-8 text-center">
+            <div className="flex justify-center mb-4 lg:mb-6">
               <Image src={LogoImage} alt="Logo" width={120} priority />
             </div>
-            <h1 className="text-2xl sm:text-[30px] lg:text-[30px] leading-[38px] font-bold text-gray-900 mb-3 whitespace-nowrap">
+            <h1 className="text-2xl sm:text-[30px] lg:text-[30px] leading-[38px] font-bold text-gray-900 mb-2 lg:mb-3 whitespace-nowrap">
               Forgot Password
             </h1>
-            <p className="text-gray-500 text-base">
+            <p className="text-gray-500 text-sm lg:text-base">
               Don't worry! We can restore it for you.
             </p>
           </div>
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
             onSubmit={handleSubmit}
           >
             {({ values, handleChange, handleBlur, isValid, dirty }) => (
-              <Form className="space-y-6">
+              <Form className="space-y-4 lg:space-y-6">
                 {submitError && (
                   <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <p className="text-red-600 text-sm">{submitError}</p>
@@ -138,7 +138,7 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={isLoading || !isValid || !values.email}
-                  className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors mt-6 lg:mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
                     backgroundColor: "rgba(95, 0, 208, 1)",
                   }}
@@ -154,15 +154,16 @@ export default function ForgotPasswordPage() {
       </div>
 
       {/* Right Side - 3D Design Image */}
-      <div className="hidden lg:flex w-1/2 bg-white overflow-hidden">
-        <Image
-          src={AuthDesign3}
-          alt="Forgot Password Design"
-          width={800}
-          height={800}
-          priority
-          className="w-full h-full object-cover"
-        />
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center">
+        <div className="relative w-full h-full">
+          <Image
+            src={AuthDesign3}
+            alt="Forgot Password Design"
+            fill
+            priority
+            className="object-cover"
+          />
+        </div>
       </div>
     </div>
   );
