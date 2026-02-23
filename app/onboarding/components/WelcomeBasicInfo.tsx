@@ -72,7 +72,7 @@ export default function WelcomeBasicInfo() {
       </h2>
 
       <p className="text-gray-600 text-xs md:text-sm mb-10">
-        We'll tailor every feature to work for you
+        We&apos;ll tailor every feature to work for you
       </p>
 
       <div className="space-y-4">

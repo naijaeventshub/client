@@ -212,7 +212,7 @@ export default function ResetPasswordOTPPage() {
         {/* Footer Text with Resend Link */}
         <div className="mt-8 text-center text-sm text-gray-600">
           <p>
-            Didn't receive the code?{" "}
+            Didn&apos;t receive the code?{" "}
             <button
               type="button"
               onClick={handleResendOtp}

@@ -1,7 +1,7 @@
 "use client"
 
-import { LocationForm } from "@/components/dashboard/LocationForm";
-import ViewPageHeader from "@/components/dashboard/ViewPageHeader";
+import { LocationForm } from "@/components/pages/dashboard/locations/LocationForm";
+import ViewPageHeader from "@/components/layout/dashboard/ViewPageHeader";
 import { toast } from "@/hooks/use-toast";
 import { catchError } from "@/lib/utils";
 import { useCreateLocationMutation } from "@/store/locations";

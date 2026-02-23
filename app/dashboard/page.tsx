@@ -1,6 +1,6 @@
 "use client"
 
-import { DateFilter } from "@/components/dashboard/DateFilter";
+import { DateFilter } from "@/components/shared/DateFilter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatLabelToTitleCase } from "@/lib/label-formatters";
 import type { RootState } from "@/store";

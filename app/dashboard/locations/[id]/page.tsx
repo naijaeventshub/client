@@ -1,6 +1,6 @@
 "use client"
 
-import ViewPageHeader from "@/components/dashboard/ViewPageHeader"
+import ViewPageHeader from "@/components/layout/dashboard/ViewPageHeader"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Map } from "@/components/ui/map"
 import { Calendar, MapPin, Navigation, Store, Users } from "lucide-react"

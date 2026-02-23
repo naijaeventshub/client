@@ -1,5 +1,5 @@
 "use client";
-import { LocationForm } from "@/components/dashboard/LocationForm";
+import { LocationForm } from "@/components/pages/dashboard/locations/LocationForm";
 import { Modal } from "@/components/ui/modal";
 import { catchError } from "@/lib/utils";
 import { useCreateLocationMutation } from "@/store/locations";

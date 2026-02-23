@@ -1,7 +1,7 @@
 "use client"
 
-import RoleForm, { RoleFormValues } from "@/components/dashboard/RoleForm";
-import ViewPageHeader from "@/components/dashboard/ViewPageHeader";
+import RoleForm, { RoleFormValues } from "@/components/pages/dashboard/roles/RoleForm";
+import ViewPageHeader from "@/components/layout/dashboard/ViewPageHeader";
 import { useRouter } from "next/navigation";
 import { useContext } from "../layout";
 

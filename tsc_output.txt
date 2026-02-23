@@ -1,0 +1,4 @@
+﻿components/pages/dashboard/locations/LocationModal.tsx(2,30): error TS2307: Cannot find module '@/components/dashboard/LocationForm' or its corresponding type declarations.
+components/ui/data-table.tsx(3,33): error TS2307: Cannot find module '@/components/dashboard/MonthYearPicker' or its corresponding type declarations.
+components/ui/data-table.tsx(497,48): error TS7006: Parameter 'month' implicitly has an 'any' type.
+components/ui/data-table.tsx(497,55): error TS7006: Parameter 'year' implicitly has an 'any' type.

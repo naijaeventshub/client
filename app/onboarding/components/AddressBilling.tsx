@@ -103,7 +103,7 @@ export default function AddressBilling() {
       </h2>
 
       <p className="text-gray-600 text-xs md:text-sm mb-10">
-        We'll use this to personalize your event experience.
+        We&apos;ll use this to personalize your event experience.
       </p>
 
       <div className="space-y-4">

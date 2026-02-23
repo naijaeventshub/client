@@ -1,6 +1,6 @@
 "use client";
 
-import ListPageHeader from "@/components/dashboard/ListPageHeader";
+import ListPageHeader from "@/components/layout/dashboard/ListPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import type { ColumnDef } from "@/components/ui/data-table-types";

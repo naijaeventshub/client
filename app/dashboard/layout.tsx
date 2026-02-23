@@ -1,8 +1,8 @@
 "use client"
 
-import { DashboardHeader } from "@/components/dashboard/header"
-import { RolesProvider } from "@/components/dashboard/RolesContext"
-import { DashboardSidebar } from "@/components/dashboard/sidebar"
+import { DashboardHeader } from "@/components/layout/dashboard/header"
+import { RolesProvider } from "@/components/pages/dashboard/roles/RolesContext"
+import { DashboardSidebar } from "@/components/layout/dashboard/sidebar"
 import SessionTimeout from "@/components/SessionTimeout"
 import Logo from "@/images/orbit-logo.png"
 import { useSession } from "next-auth/react"

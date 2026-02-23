@@ -21,14 +21,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const googleMapsEnabled =
+    process.env.NEXT_PUBLIC_ENABLE_GOOGLE_MAPS === "true";
+  const shouldLoadGoogleMaps =
+    googleMapsEnabled &&
+    typeof googleMapsApiKey === "string" &&
+    googleMapsApiKey.trim().startsWith("AIza") &&
+    googleMapsApiKey.trim().length >= 35;
+
   return (
     <html lang="en">
       <head>
-        <script
-          async
-          defer
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-        />
+        {shouldLoadGoogleMaps && (
+          <script
+            async
+            defer
+            src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`}
+          />
+        )}
       </head>
       <body className={inter.className}>
         <Providers>

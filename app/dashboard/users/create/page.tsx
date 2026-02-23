@@ -1,7 +1,7 @@
 "use client";
-import { useRoles } from "@/components/dashboard/RolesContext";
-import UserForm from "@/components/dashboard/UserForm";
-import ViewPageHeader from "@/components/dashboard/ViewPageHeader";
+import { useRoles } from "@/components/pages/dashboard/roles/RolesContext";
+import UserForm from "@/components/pages/dashboard/users/UserForm";
+import ViewPageHeader from "@/components/layout/dashboard/ViewPageHeader";
 import { toast } from "@/hooks/use-toast";
 import { catchError } from "@/lib/utils";
 import { useCreateUserMutation } from "@/store/users";

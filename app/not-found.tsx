@@ -1,5 +1,5 @@
-import { DashboardHeader } from "@/components/dashboard/header";
-import { DashboardSidebar } from "@/components/dashboard/sidebar";
+import { DashboardHeader } from "@/components/layout/dashboard/header";
+import { DashboardSidebar } from "@/components/layout/dashboard/sidebar";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";

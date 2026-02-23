@@ -1,5 +1,5 @@
 "use client";
-import ViewPageHeader from "@/components/dashboard/ViewPageHeader";
+import ViewPageHeader from "@/components/layout/dashboard/ViewPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Mail, MapPin, Phone, Shield, User } from "lucide-react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { MonthYearPicker } from "@/components/dashboard/MonthYearPicker";
+import { MonthYearPicker } from "@/components/shared/MonthYearPicker";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

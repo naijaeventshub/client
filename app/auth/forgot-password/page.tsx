@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
               Forgot Password
             </h1>
             <p className="text-gray-500 text-sm lg:text-base">
-              Don't worry! We can restore it for you.
+              Don&apos;t worry! We can restore it for you.
             </p>
           </div>
 

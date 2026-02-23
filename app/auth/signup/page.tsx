@@ -98,7 +98,7 @@ export default function SignupPage() {
               <Image src={Logo} alt="KONFERA" width={120} priority />
             </div>
             <h1 className="text-2xl sm:text-[30px] lg:text-[30px] leading-[38px] font-bold text-gray-900 mb-2 lg:mb-3 whitespace-nowrap">
-              Let's create your account
+              Let&apos;s create your account
             </h1>
             <p className="text-gray-500 text-sm lg:text-base">
               Sign up for free and get started.

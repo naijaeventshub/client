@@ -100,7 +100,7 @@ export default function LoginPage() {
               Welcome back
             </h1>
             <p className="text-gray-500 text-sm lg:text-base">
-              Let's sign in to your account and get started.
+              Let&apos;s sign in to your account and get started.
             </p>
           </div>
 
@@ -239,7 +239,7 @@ export default function LoginPage() {
 
                 {/* Sign Up Link */}
                 <p className="text-center text-gray-600 text-sm mt-4 lg:mt-6">
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
                     href="/auth/signup"
                     className="font-semibold hover:opacity-80 transition-opacity"
