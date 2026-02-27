@@ -339,9 +339,11 @@ function EventCard({
   onLike: (id: string) => void;
   onSave: (id: string) => void;
 }) {
+  const eventHref = event.isLive ? `/events/${event.id}/live` : `/events/${event.id}`;
+
   return (
     <article className="flex h-[458px] w-full max-w-[323px] flex-col gap-[10px] rounded-[16px] border border-[#dfdfdf] bg-white p-4">
-      <Link href={`/events/${event.id}`} className="relative block h-[170px] overflow-hidden rounded-[14px]">
+      <Link href={eventHref} className="relative block h-[170px] overflow-hidden rounded-[14px]">
         <Image src={resolveImage(event.image)} alt={event.title} fill className="object-cover" sizes="323px" />
         <div className="absolute bottom-2 right-2">
           <Badge status={status} />
@@ -349,8 +351,8 @@ function EventCard({
       </Link>
 
       <span className="text-xs font-medium text-[#4a30f3]">{event.tag}</span>
-      <Link href={`/events/${event.id}`} className="group">
-        <h4 className="text-[40px] font-semibold leading-[1.02] text-[#292929] transition group-hover:text-[#5E16FF]">
+      <Link href={eventHref} className="group">
+        <h4 className="text-[18px] font-bold leading-[26px] text-[#292929] transition group-hover:text-[#5E16FF] sm:text-[20px] sm:leading-7">
           {event.title}
         </h4>
       </Link>
@@ -392,7 +394,7 @@ function EventCard({
           </button>
         </div>
 
-        <Link href={`/events/${event.id}`} className="inline-flex h-7 min-w-[91px] items-center justify-center gap-1 rounded-[1234px] bg-[#5E16FF] px-[10px] text-[11px] font-semibold text-white">
+        <Link href={eventHref} className="inline-flex h-7 min-w-[91px] items-center justify-center gap-1 rounded-[1234px] bg-[#5E16FF] px-[10px] text-[11px] font-semibold text-white">
           Buy Tickets
           <span className="grid h-4 w-4 place-items-center rounded-full bg-white/20">
             <ArrowUpRight className="h-3 w-3" />
@@ -423,14 +425,14 @@ function Section({
   onReset: () => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const desktopCols =
+  const desktopGridTemplate =
     events.length <= 1
-      ? "md:grid-cols-1 md:justify-items-center"
+      ? "md:[grid-template-columns:minmax(0,323px)] md:justify-center"
       : events.length === 2
-        ? "md:grid-cols-2"
+        ? "md:[grid-template-columns:repeat(2,minmax(0,323px))] md:justify-between"
         : events.length === 3
-          ? "md:grid-cols-2 xl:grid-cols-3"
-          : "md:grid-cols-2 xl:grid-cols-4";
+          ? "md:[grid-template-columns:repeat(2,minmax(0,323px))] md:justify-between xl:[grid-template-columns:repeat(3,minmax(0,323px))] xl:justify-between"
+          : "md:[grid-template-columns:repeat(2,minmax(0,323px))] md:justify-between xl:[grid-template-columns:repeat(4,minmax(0,323px))] xl:justify-between";
 
   return (
     <section>
@@ -467,7 +469,7 @@ function Section({
               </div>
             ))}
           </div>
-          <div className={`hidden gap-4 md:grid ${desktopCols}`}>
+          <div className={`hidden gap-y-4 md:grid ${desktopGridTemplate}`}>
             {events.map((event, index) => (
               <EventCard key={`d-${title}-${event.id}-${index}`} event={event} status={statusPattern[index % 4]} liked={likes.includes(event.id)} saved={saves.includes(event.id)} onLike={onLike} onSave={onSave} />
             ))}
@@ -496,6 +498,19 @@ export default function EventsPage() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = previousOverflow;
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     if (!navigator.geolocation) return;
@@ -583,9 +598,13 @@ export default function EventsPage() {
                 <Image src="/images/logo-icon.svg" alt="Konfera" width={22} height={22} className="h-[22px] w-[22px]" />
                 <span className="text-sm font-semibold tracking-[0.08em] text-[#4a30f3]">KONFERA</span>
               </Link>
-              <label className="hidden h-9 w-[280px] items-center gap-2 rounded-md border border-[#d8d8d8] bg-[#f8f8f8] px-3 md:flex">
-                <Search className="h-4 w-4 text-[#767676]" />
-                <input aria-label="Search events" className="w-full border-0 bg-transparent text-sm outline-none" placeholder="Search" />
+              <label className="hidden h-11 w-[300px] items-center rounded-[12px] bg-[#EEF2F7] px-4 md:flex">
+                <input
+                  aria-label="Search events"
+                  className="w-full border-0 bg-transparent text-base text-[#5E6E82] outline-none placeholder:text-[#64748B]"
+                  placeholder="Search"
+                />
+                <Search className="h-5 w-5 text-[#1F1F1F]" />
               </label>
             </div>
 
@@ -601,22 +620,61 @@ export default function EventsPage() {
               <button type="button" className="relative h-9 w-9 overflow-hidden rounded-full border border-[#d5d5d5] bg-[#fafafa]" aria-label="My profile">
                 <Image src="/placeholder-user.jpg" alt="User profile" fill className="object-cover" />
               </button>
-              <button type="button" onClick={() => setMobileMenuOpen((prev) => !prev)} aria-label={mobileMenuOpen ? "Close menu" : "Open menu"} className="grid h-9 w-9 place-items-center rounded-full border border-[#d5d5d5] bg-white text-[#4a4a4a]">
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <button type="button" onClick={() => setMobileMenuOpen(true)} aria-label="Open menu" className="grid h-9 w-9 place-items-center rounded-full border border-[#d5d5d5] bg-white text-[#4a4a4a]">
+                <Menu className="h-5 w-5" />
               </button>
             </div>
           </div>
         </div>
-
-        <div className={`absolute left-0 right-0 top-full md:hidden ${mobileMenuOpen ? "pointer-events-auto visible translate-y-0 opacity-100" : "pointer-events-none invisible -translate-y-2 opacity-0"} transition-all duration-300 ease-out`}>
-          <div className={`${pageContainer} ${horizontalPadding} pb-3`}>
-            <nav className="rounded-xl border border-[#e5e5e5] bg-white/95 p-3 shadow-[0_12px_28px_rgba(0,0,0,0.12)]">
-              <Link href="/events" onClick={() => setMobileMenuOpen(false)} className="block w-full rounded-lg px-3 py-2 text-sm font-medium text-[#333] hover:bg-[#f4f4f4]">Create Events</Link>
-              <Link href="/events" onClick={() => setMobileMenuOpen(false)} className="mt-1 block w-full rounded-lg px-3 py-2 text-sm font-medium text-[#333] hover:bg-[#f4f4f4]">My tickets</Link>
-            </nav>
-          </div>
-        </div>
       </header>
+
+      <div
+        className={`fixed inset-0 z-[60] md:hidden ${
+          mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
+        <div
+          className={`absolute inset-0 bg-[#121212]/45 transition-opacity duration-300 ${
+            mobileMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        <aside
+          className={`absolute left-0 top-0 h-full w-[82%] max-w-[320px] border-r border-[#dfdfdf] bg-white shadow-[0_20px_45px_rgba(0,0,0,0.2)] transition-transform duration-300 ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile menu"
+        >
+          <div className="flex h-16 items-center justify-between border-b border-[#ececec] px-4">
+            <span className="text-sm font-semibold tracking-[0.08em] text-[#4a30f3]">KONFERA</span>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
+              className="grid h-9 w-9 place-items-center rounded-full border border-[#d5d5d5] bg-white text-[#4a4a4a]"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <nav className="p-4">
+            <Link
+              href="/events"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block w-full rounded-lg px-3 py-2 text-sm font-medium text-[#333] hover:bg-[#f4f4f4]"
+            >
+              Create Events
+            </Link>
+            <Link
+              href="/events"
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-1 block w-full rounded-lg px-3 py-2 text-sm font-medium text-[#333] hover:bg-[#f4f4f4]"
+            >
+              My tickets
+            </Link>
+          </nav>
+        </aside>
+      </div>
 
       <section className="w-full pb-8 pt-3 sm:pt-4">
         <div className="relative overflow-hidden">
