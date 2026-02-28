@@ -1,36 +1,100 @@
-'use client';
+"use client"
 
 import { useEffect, useRef } from 'react';
 
-interface MapProps {
-  latitude: number;
-  longitude: number;
-  title?: string;
-  className?: string;
-  height?: string;
+// Declare Google Maps types locally for this component
+declare global {
+  namespace google {
+    namespace maps {
+      class Map {
+        constructor(mapDiv: HTMLElement, opts?: MapOptions);
+        setCenter(latLng: LatLng | LatLngLiteral): void;
+        setZoom(zoom: number): void;
+        setMap(map: Map | null): void;
+      }
+
+      class Marker {
+        constructor(opts?: MarkerOptions);
+        setMap(map: Map | null): void;
+        addListener(eventName: string, handler: Function): void;
+      }
+
+      class InfoWindow {
+        constructor(opts?: InfoWindowOptions);
+        open(map?: Map, anchor?: Marker): void;
+        close(): void;
+      }
+
+      interface MapOptions {
+        center?: LatLng | LatLngLiteral;
+        zoom?: number;
+        mapTypeId?: MapTypeId;
+        mapTypeControl?: boolean;
+        streetViewControl?: boolean;
+        fullscreenControl?: boolean;
+        zoomControl?: boolean;
+      }
+
+      interface MarkerOptions {
+        position: LatLng | LatLngLiteral;
+        map?: Map;
+        title?: string;
+        animation?: Animation;
+      }
+
+      interface InfoWindowOptions {
+        content?: string | Element;
+        position?: LatLng | LatLngLiteral;
+      }
+
+      interface LatLng {
+        lat(): number;
+        lng(): number;
+      }
+
+      interface LatLngLiteral {
+        lat: number;
+        lng: number;
+      }
+
+      enum MapTypeId {
+        ROADMAP = "roadmap",
+        SATELLITE = "satellite",
+        HYBRID = "hybrid",
+        TERRAIN = "terrain",
+      }
+
+      enum Animation {
+        BOUNCE = 1,
+        DROP = 2,
+      }
+    }
+  }
 }
 
-export function Map({
-  latitude,
-  longitude,
-  title,
-  className = '',
-  height = '400px',
-}: MapProps) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+interface MapProps {
+  latitude: number
+  longitude: number
+  title?: string
+  className?: string
+  height?: string
+}
+
+export function Map({ latitude, longitude, title, className = "", height = "400px" }: MapProps) {
+  const mapRef = useRef<HTMLDivElement>(null)
+  const mapInstanceRef = useRef<google.maps.Map | null>(null)
+  const markerRef = useRef<google.maps.Marker | null>(null)
 
   useEffect(() => {
     // Check if Google Maps API is loaded
     if (typeof google === 'undefined' || !google.maps) {
-      console.warn('Google Maps API not loaded');
-      return;
+      console.warn('Google Maps API not loaded')
+      return
     }
 
-    if (!mapRef.current) return;
+    if (!mapRef.current) return
 
-    const currentMapRef = mapRef.current;
+    const currentMapRef = mapRef.current
 
     // Create map instance
     const map = new google.maps.Map(currentMapRef, {
@@ -41,9 +105,9 @@ export function Map({
       streetViewControl: false,
       fullscreenControl: true,
       zoomControl: true,
-    });
+    })
 
-    mapInstanceRef.current = map;
+    mapInstanceRef.current = map
 
     // Create marker
     const marker = new google.maps.Marker({
@@ -51,9 +115,9 @@ export function Map({
       map: map,
       title: title || 'Location',
       animation: google.maps.Animation.DROP,
-    });
+    })
 
-    markerRef.current = marker;
+    markerRef.current = marker
 
     // Add info window
     const infoWindow = new google.maps.InfoWindow({
@@ -65,25 +129,25 @@ export function Map({
           </p>
         </div>
       `,
-    });
+    })
 
     marker.addListener('click', () => {
-      infoWindow.open(map, marker);
-    });
+      infoWindow.open(map, marker)
+    })
 
     // Cleanup function
     return () => {
       if (markerRef.current) {
-        markerRef.current.setMap(null);
+        markerRef.current.setMap(null)
       }
       if (mapInstanceRef.current) {
         // Google Maps doesn't have a destroy method, just clear the div
         if (currentMapRef) {
-          currentMapRef.innerHTML = '';
+          currentMapRef.innerHTML = ''
         }
       }
-    };
-  }, [latitude, longitude, title]);
+    }
+  }, [latitude, longitude, title])
 
   // Fallback for when Google Maps API is not loaded
   if (typeof google === 'undefined' || !google.maps) {
@@ -95,12 +159,10 @@ export function Map({
         <div className="text-center text-gray-500">
           <div className="text-2xl mb-2">🗺️</div>
           <p>Map loading...</p>
-          <p className="text-sm">
-            Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}
-          </p>
+          <p className="text-sm">Coordinates: {latitude.toFixed(6)}, {longitude.toFixed(6)}</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -109,7 +171,7 @@ export function Map({
       className={`rounded-lg overflow-hidden border border-gray-200 ${className}`}
       style={{ height }}
     />
-  );
+  )
 }
 
-export default Map;
+export default Map

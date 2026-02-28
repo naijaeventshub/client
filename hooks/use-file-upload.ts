@@ -1,20 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { toast } from '@/hooks/use-toast';
+import { toast } from "@/hooks/use-toast";
 import {
   FileUploadConfig,
   StorageFactory,
-} from '@/lib/storage/storage-factory';
-import { StorageProvider, UploadResult } from '@/lib/storage/storage-provider';
-import { useCallback, useMemo, useRef, useState } from 'react';
+} from "@/lib/storage/storage-factory";
+import { StorageProvider, UploadResult } from "@/lib/storage/storage-provider";
+import { useCallback, useRef, useState } from "react";
 
 // Re-export for convenience
-export type { FileUploadConfig } from '@/lib/storage/storage-factory';
+export type { FileUploadConfig } from "@/lib/storage/storage-factory";
 
 export type StorageProviderType =
-  | 'aws-s3'
-  | 'local'
-  | 'cloudinary'
-  | 'firebase';
+  | "aws-s3"
+  | "local"
+  | "cloudinary"
+  | "firebase";
 
 export interface FileUploadState {
   files: File[];
@@ -33,12 +32,9 @@ export interface FileUploadActions {
 }
 
 export function useFileUpload(
-  config: Partial<FileUploadConfig> = {}
+  config: Partial<FileUploadConfig> = {},
 ): FileUploadState & FileUploadActions {
-  const mergedConfig = useMemo(
-    () => ({ ...StorageFactory.getDefaultConfig(), ...config }),
-    [config]
-  );
+  const mergedConfig = { ...StorageFactory.getDefaultConfig(), ...config };
   const [state, setState] = useState<FileUploadState>({
     files: [],
     uploadedFiles: [],
@@ -79,7 +75,7 @@ export function useFileUpload(
         return error.message;
       }
     },
-    [mergedConfig, getStorageProvider]
+    [mergedConfig, getStorageProvider],
   );
 
   const addFiles = useCallback(
@@ -98,9 +94,9 @@ export function useFileUpload(
 
       if (errors.length > 0) {
         toast({
-          title: 'File validation errors',
-          description: errors.join(', '),
-          variant: 'destructive',
+          title: "File validation errors",
+          description: errors.join(", "),
+          variant: "destructive",
         });
       }
 
@@ -114,7 +110,7 @@ export function useFileUpload(
         }));
       }
     },
-    [mergedConfig, validateFile]
+    [mergedConfig, validateFile],
   );
 
   const removeFile = useCallback((fileId: string) => {
@@ -122,7 +118,7 @@ export function useFileUpload(
       ...prev,
       files: prev.files.filter((_, index) => index.toString() !== fileId),
       uploadProgress: Object.fromEntries(
-        Object.entries(prev.uploadProgress).filter(([key]) => key !== fileId)
+        Object.entries(prev.uploadProgress).filter(([key]) => key !== fileId),
       ),
     }));
   }, []);
@@ -139,7 +135,7 @@ export function useFileUpload(
 
       return await provider.upload(file, fileId, uploadConfig);
     },
-    [mergedConfig, getStorageProvider]
+    [mergedConfig, getStorageProvider],
   );
 
   const uploadFiles = useCallback(async (): Promise<UploadResult[]> => {
@@ -179,11 +175,11 @@ export function useFileUpload(
       }
 
       if (errors.length > 0) {
-        setState((prev) => ({ ...prev, error: errors.join(', ') }));
+        setState((prev) => ({ ...prev, error: errors.join(", ") }));
         toast({
-          title: 'Upload errors',
-          description: errors.join(', '),
-          variant: 'destructive',
+          title: "Upload errors",
+          description: errors.join(", "),
+          variant: "destructive",
         });
       }
 
@@ -196,7 +192,7 @@ export function useFileUpload(
         }));
 
         toast({
-          title: 'Upload successful',
+          title: "Upload successful",
           description: `${uploadedFiles.length} file(s) uploaded successfully`,
         });
       }
@@ -233,14 +229,14 @@ export function useFileUpload(
           }));
         } catch (error: any) {
           toast({
-            title: 'Retry failed',
+            title: "Retry failed",
             description: error.message,
-            variant: 'destructive',
+            variant: "destructive",
           });
         }
       }
     },
-    [state.files, uploadFile]
+    [state.files, uploadFile],
   );
 
   return {

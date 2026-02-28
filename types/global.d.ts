@@ -1,10 +1,9 @@
 declare global {
   interface Window {
-    google?: typeof google;
+    google: typeof google;
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare namespace google {
   namespace maps {
     class Map {
@@ -17,10 +16,7 @@ declare namespace google {
     class Marker {
       constructor(opts?: MarkerOptions);
       setMap(map: Map | null): void;
-      addListener(
-        eventName: string,
-        handler: (...args: unknown[]) => void
-      ): void;
+      addListener(eventName: string, handler: Function): void;
     }
 
     class InfoWindow {
@@ -62,10 +58,10 @@ declare namespace google {
     }
 
     enum MapTypeId {
-      ROADMAP = 'roadmap',
-      SATELLITE = 'satellite',
-      HYBRID = 'hybrid',
-      TERRAIN = 'terrain',
+      ROADMAP = "roadmap",
+      SATELLITE = "satellite",
+      HYBRID = "hybrid",
+      TERRAIN = "terrain",
     }
 
     enum Animation {

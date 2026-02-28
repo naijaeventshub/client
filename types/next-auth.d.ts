@@ -1,9 +1,9 @@
-import type { DefaultSession } from 'next-auth';
-import type { User as AppUser } from './user';
+import type { DefaultSession } from "next-auth";
+import type { User as AppUser } from "./user";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
-    user: AppUser & DefaultSession['user'];
+    user: AppUser & DefaultSession["user"];
     accessToken: string;
   }
 
@@ -12,7 +12,7 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module "next-auth/jwt" {
   interface JWT {
     user: AppUser;
     accessToken: string;

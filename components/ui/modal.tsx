@@ -1,14 +1,14 @@
 // components/ui/modal.tsx
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect } from "react";
 
 type ModalSize =
-  | 'sm-center'
-  | 'lg-center'
-  | 'xlg-center'
-  | 'half-right'
-  | 'half-left'
-  | 'third-right'
-  | 'fullscreen';
+  | "sm-center"
+  | "lg-center"
+  | "xlg-center"
+  | "half-right"
+  | "half-left"
+  | "third-right"
+  | "fullscreen";
 
 interface ModalProps {
   open: boolean;
@@ -20,35 +20,42 @@ interface ModalProps {
 }
 
 const sizeClasses: Record<ModalSize, string> = {
-  'sm-center': 'w-full max-w-sm mx-auto my-auto rounded-lg',
-  'lg-center': 'w-full max-w-2xl mx-auto my-auto rounded-lg',
-  'xlg-center': 'w-full max-w-6xl mx-auto my-auto rounded-lg',
-  'half-right': 'w-1/2 h-full ml-auto rounded-l-lg',
-  'half-left': 'w-1/2 h-full mr-auto rounded-r-lg',
-  'third-right': 'w-1/3 h-full ml-auto rounded-l-lg',
-  fullscreen: 'w-full h-full m-0 rounded-none',
+  "sm-center":
+    "w-full max-w-sm mx-auto my-auto rounded-lg",
+  "lg-center":
+    "w-full max-w-2xl mx-auto my-auto rounded-lg",
+  "xlg-center":
+    "w-full max-w-6xl mx-auto my-auto rounded-lg",
+  "half-right":
+    "w-1/2 h-full ml-auto rounded-l-lg",
+  "half-left":
+    "w-1/2 h-full mr-auto rounded-r-lg",
+  "third-right":
+    "w-1/3 h-full ml-auto rounded-l-lg",
+  fullscreen:
+    "w-full h-full m-0 rounded-none",
 };
 
 export const Modal = ({
   open,
   onClose,
-  size = 'sm-center',
+  size = "sm-center",
   children,
-  className = '',
+  className = "",
   title,
 }: ModalProps) => {
   useEffect(() => {
     if (!open) return;
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, [open, onClose]);
 
   if (!open) return null;
 
-  const labelId = title ? 'modal-title' : undefined;
+  const labelId = title ? "modal-title" : undefined;
 
   return (
     <div
@@ -56,9 +63,7 @@ export const Modal = ({
       onClick={onClose}
       aria-modal="true"
       role="dialog"
-      {...(labelId
-        ? { 'aria-labelledby': labelId }
-        : { 'aria-label': 'Modal' })}
+      {...(labelId ? { "aria-labelledby": labelId } : { "aria-label": "Modal" })}
     >
       <div
         className={`bg-white p-8 shadow-xl ${sizeClasses[size]} ${className} relative`}

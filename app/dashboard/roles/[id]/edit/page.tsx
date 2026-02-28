@@ -1,0 +1,42 @@
+"use client"
+
+import RoleForm, { RoleFormValues } from "@/components/pages/dashboard/roles/RoleForm";
+import ViewPageHeader from "@/components/layout/dashboard/ViewPageHeader";
+import { useRouter } from "next/navigation";
+import { useContext } from "../layout";
+
+export default function EditRolePage() {
+  const router = useRouter();
+  const { role, isLoading } = useContext();
+  if (!role) { return null; }
+
+  const initialValues: RoleFormValues = {
+    name: role?.name || "",
+    description: role?.description || "",
+    status: role?.status || "active",
+    access_type: role?.access_type || "web",
+    permissions: role?.permissions?.map((p: any) => p.uuid || p.id) || [],
+  };
+
+  if (isLoading) {
+    return <div className="p-8">Loading role data...</div>;
+  }
+
+  return (
+    <>
+      <ViewPageHeader
+        title="Edit Role"
+        description="Update role information"
+      />
+      <RoleForm
+        initialValues={initialValues}
+        isEdit={true}
+        roleId={role.uuid}
+        title="Edit Role"
+        description="Update role information"
+        submitButtonText="Update Role"
+        onSuccess={() => router.push(`/dashboard/roles/${role.uuid}`)}
+      />
+    </>
+  );
+}

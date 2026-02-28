@@ -1,8 +1,8 @@
-import { ErrorMessage, Field } from 'formik';
-import { Eye, EyeOff, Lock } from 'lucide-react';
-import { useState } from 'react';
-import { Input } from './input';
-import { Label } from './label';
+import { ErrorMessage, Field } from "formik";
+import { Eye, EyeOff, Lock } from "lucide-react";
+import { useState } from "react";
+import { Input } from "./input";
+import { Label } from "./label";
 
 interface PasswordFieldProps {
   id: string;
@@ -37,7 +37,7 @@ export function PasswordField({
           as={Input}
           id={id}
           name={name}
-          type={show ? 'text' : 'password'}
+          type={show ? "text" : "password"}
           autoComplete={autoComplete}
           className="pl-10 pr-10"
           placeholder={placeholder}
@@ -51,16 +51,12 @@ export function PasswordField({
           tabIndex={-1}
           className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
           onClick={() => setShow((v) => !v)}
-          aria-label={show ? 'Hide password' : 'Show password'}
+          aria-label={show ? "Hide password" : "Show password"}
         >
           {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
         </button>
       </div>
-      <ErrorMessage
-        name={name}
-        component="div"
-        className="text-red-500 text-xs mt-1"
-      />
+      <ErrorMessage name={name} component="div" className="text-red-500 text-xs mt-1" />
     </div>
   );
 }

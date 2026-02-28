@@ -1,37 +1,29 @@
-'use client';
+"use client"
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { AlertCircle, ArrowLeft } from "lucide-react"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 const errorMessages: Record<string, string> = {
-  Signin: 'Try signing in with a different account.',
-  OAuthSignin: 'Try signing in with a different account.',
-  OAuthCallback: 'Try signing in with a different account.',
-  OAuthCreateAccount: 'Try signing in with a different account.',
-  EmailCreateAccount: 'Try signing in with a different account.',
-  Callback: 'Try signing in with a different account.',
-  OAuthAccountNotLinked:
-    'To confirm your identity, sign in with the same account you used originally.',
-  EmailSignin: 'The e-mail could not be sent.',
-  CredentialsSignin:
-    'Sign in failed. Check the details you provided are correct.',
-  SessionRequired: 'Please sign in to access this page.',
-  default: 'Unable to sign in.',
-};
+  Signin: "Try signing in with a different account.",
+  OAuthSignin: "Try signing in with a different account.",
+  OAuthCallback: "Try signing in with a different account.",
+  OAuthCreateAccount: "Try signing in with a different account.",
+  EmailCreateAccount: "Try signing in with a different account.",
+  Callback: "Try signing in with a different account.",
+  OAuthAccountNotLinked: "To confirm your identity, sign in with the same account you used originally.",
+  EmailSignin: "The e-mail could not be sent.",
+  CredentialsSignin: "Sign in failed. Check the details you provided are correct.",
+  SessionRequired: "Please sign in to access this page.",
+  default: "Unable to sign in.",
+}
 
 export default function AuthErrorPage() {
-  const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const searchParams = useSearchParams()
+  const error = searchParams.get("error")
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f8f8f8] py-12 px-4 sm:px-6 lg:px-8">
@@ -40,12 +32,8 @@ export default function AuthErrorPage() {
           <div className="mx-auto h-16 w-16 bg-red-100 rounded-lg flex items-center justify-center">
             <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-[#444444]">
-            Authentication Error
-          </h2>
-          <p className="mt-2 text-sm text-[#ababab]">
-            There was a problem signing you in
-          </p>
+          <h2 className="mt-6 text-3xl font-extrabold text-[#444444]">Authentication Error</h2>
+          <p className="mt-2 text-sm text-[#ababab]">There was a problem signing you in</p>
         </div>
 
         <Card>
@@ -59,9 +47,7 @@ export default function AuthErrorPage() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {error
-                  ? errorMessages[error] || errorMessages.default
-                  : errorMessages.default}
+                {error ? errorMessages[error] || errorMessages.default : errorMessages.default}
               </AlertDescription>
             </Alert>
 
@@ -80,5 +66,5 @@ export default function AuthErrorPage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

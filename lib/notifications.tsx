@@ -1,4 +1,4 @@
-export type NotificationType = 'success' | 'error' | 'warning' | 'info';
+export type NotificationType = "success" | "error" | "warning" | "info";
 
 export interface NotificationOptions {
   title?: string;
@@ -10,8 +10,8 @@ export interface NotificationOptions {
   onConfirm?: () => void;
 }
 
-import { ToastAction } from '@/components/ui/toast';
-import { toast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/hooks/use-toast";
 
 export const showNotification = (options: NotificationOptions) => {
   const {
@@ -19,7 +19,7 @@ export const showNotification = (options: NotificationOptions) => {
     message,
     type,
     showConfirmButton = false,
-    confirmButtonText = 'OK',
+    confirmButtonText = "OK",
     onConfirm,
   } = options;
 
@@ -27,7 +27,7 @@ export const showNotification = (options: NotificationOptions) => {
     const t = toast({
       title: title || type.charAt(0).toUpperCase() + type.slice(1),
       description: message,
-      variant: type === 'error' ? 'destructive' : 'default',
+      variant: type === "error" ? "destructive" : "default",
       action: (
         <ToastAction
           altText={confirmButtonText}
@@ -45,7 +45,7 @@ export const showNotification = (options: NotificationOptions) => {
     toast({
       title: title || type.charAt(0).toUpperCase() + type.slice(1),
       description: message,
-      variant: type === 'error' ? 'destructive' : 'default',
+      variant: type === "error" ? "destructive" : "default",
     });
     return true;
   }
@@ -53,28 +53,28 @@ export const showNotification = (options: NotificationOptions) => {
 
 // Convenience methods
 export const showSuccess = (message: string, title?: string) => {
-  showNotification({ type: 'success', message, title });
+  showNotification({ type: "success", message, title });
 };
 
 export const showError = (message: string, title?: string) => {
-  showNotification({ type: 'error', message, title });
+  showNotification({ type: "error", message, title });
 };
 
 export const showWarning = (message: string, title?: string) => {
-  showNotification({ type: 'warning', message, title });
+  showNotification({ type: "warning", message, title });
 };
 
 export const showInfo = (message: string, title?: string) => {
-  showNotification({ type: 'info', message, title });
+  showNotification({ type: "info", message, title });
 };
 
 export const showConfirm = (
   message: string,
   onConfirm: () => void,
-  title?: string
+  title?: string,
 ) => {
   return showNotification({
-    type: 'warning',
+    type: "warning",
     message,
     title,
     showConfirmButton: true,

@@ -2,14 +2,14 @@
 export async function loadImageAsBase64(imagePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    img.crossOrigin = "anonymous";
 
     img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
       if (!ctx) {
-        reject(new Error('Could not get canvas context'));
+        reject(new Error("Could not get canvas context"));
         return;
       }
 
@@ -18,7 +18,7 @@ export async function loadImageAsBase64(imagePath: string): Promise<string> {
       ctx.drawImage(img, 0, 0);
 
       try {
-        const base64 = canvas.toDataURL('image/png');
+        const base64 = canvas.toDataURL("image/png");
         resolve(base64);
       } catch (error) {
         reject(error);
@@ -35,7 +35,7 @@ export async function loadImageAsBase64(imagePath: string): Promise<string> {
 
 // Alternative: Load image from public folder
 export async function loadPublicImageAsBase64(
-  imagePath: string
+  imagePath: string,
 ): Promise<string> {
   try {
     const response = await fetch(imagePath);
@@ -44,10 +44,11 @@ export async function loadPublicImageAsBase64(
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
+      reader.onerror = () =>
+        reject(new Error(`Failed to read image file: ${imagePath}`));
       reader.readAsDataURL(blob);
     });
-  } catch {
+  } catch (error) {
     throw new Error(`Failed to load image: ${imagePath}`);
   }
 }

@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, User, Mail, LogOut } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { getUserPermissions } from '@/lib/route-permissions';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Shield, User, Mail, LogOut } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { getUserPermissions } from "@/lib/route-permissions";
 
 export default function NoPermissionsPage() {
   const { data: session } = useSession();
@@ -16,7 +16,7 @@ export default function NoPermissionsPage() {
   // Redirect to dashboard if user has any permissions
   useEffect(() => {
     if (userPermissions.length > 0) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [userPermissions, router]);
 
@@ -33,7 +33,7 @@ export default function NoPermissionsPage() {
   }
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
+    await signOut({ callbackUrl: "/auth/login" });
   };
 
   const handleContactAdmin = () => {
@@ -56,17 +56,14 @@ export default function NoPermissionsPage() {
           <CardContent className="space-y-6">
             <div className="text-center">
               <p className="text-[#ababab] mb-4">
-                Your account doesn&apos;t have the necessary permissions to
-                access this area. Please contact your administrator to request
-                the appropriate access.
+                Your account doesn&apos;t have the necessary permissions to access this area.
+                Please contact your administrator to request the appropriate access.
               </p>
             </div>
 
             {/* User Information */}
             <div className="bg-[#f8f8f8] rounded-lg p-4 space-y-3">
-              <h3 className="font-medium text-[#444444] mb-3">
-                Account Details
-              </h3>
+              <h3 className="font-medium text-[#444444] mb-3">Account Details</h3>
 
               <div className="flex items-center space-x-3">
                 <User className="w-4 h-4 text-[#ababab]" />
@@ -92,7 +89,7 @@ export default function NoPermissionsPage() {
                 <Shield className="w-4 h-4 text-[#ababab]" />
                 <div>
                   <p className="text-sm text-[#444444] font-medium">
-                    {session?.user?.roles?.[0]?.name || 'Unknown'}
+                    {session?.user?.role?.name || "Unknown"}
                   </p>
                   <p className="text-xs text-[#ababab]">Current Role</p>
                 </div>
@@ -121,8 +118,8 @@ export default function NoPermissionsPage() {
             {/* Help Text */}
             <div className="text-center">
               <p className="text-xs text-[#ababab]">
-                If you believe this is an error, please contact your system
-                administrator with the information above.
+                If you believe this is an error, please contact your system administrator
+                with the information above.
               </p>
             </div>
           </CardContent>

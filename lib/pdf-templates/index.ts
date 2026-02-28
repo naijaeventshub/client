@@ -1,1 +1,1 @@
-export { loadImageAsBase64, loadPublicImageAsBase64 } from './image-utils';
+export { loadImageAsBase64, loadPublicImageAsBase64 } from "./image-utils";

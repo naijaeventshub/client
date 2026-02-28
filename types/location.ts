@@ -1,17 +1,15 @@
 export interface Location {
   id: string;
-  uuid?: string; // Some parts of the code still use uuid
+  uuid: string;
+  full_location: string;
   street: string;
   city: string;
   state: string;
   region: string;
   country: string;
   postal_code: string;
-  latitude: number | string;
-  longitude: number | string;
-  full_location: string;
-  markets_count?: number;
-  markets?: any[];
+  latitude: number;
+  longitude: number;
+  status: string;
   created_at: string;
-  updated_at: string;
 }

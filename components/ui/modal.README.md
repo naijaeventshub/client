@@ -3,7 +3,7 @@
 Import and use the Modal component in any React/Next.js component:
 
 ```tsx
-import Modal from './modal'; // adjust path as needed
+import Modal from "./modal"; // adjust path as needed
 
 const [open, setOpen] = useState(false);
 
@@ -31,8 +31,8 @@ const [open, setOpen] = useState(false);
 ## Example
 
 ```tsx
-import { useState } from 'react';
-import Modal from './modal';
+import { useState } from "react";
+import Modal from "./modal";
 
 export default function Example() {
   const [open, setOpen] = useState(false);

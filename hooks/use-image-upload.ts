@@ -1,22 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// File: hooks/use-image-upload.ts
 
-import { useToast } from '@/hooks/use-toast';
-import { StorageFactory } from '@/lib/storage/storage-factory';
-import { useCallback, useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
+import { StorageFactory } from "@/lib/storage/storage-factory";
+import { useCallback, useState } from "react";
 
 interface UseImageUploadOptions {
   folder?: string;
   maxFileSize?: number;
   allowedTypes?: string[];
-  provider?: 'aws-s3' | 'aws-s3-proxy' | 'cloudinary' | 'local';
-  showToast?: boolean;
+  provider?: "aws-s3" | "aws-s3-proxy" | "cloudinary" | "local";
 }
 
 export function useImageUpload(options: UseImageUploadOptions = {}) {
   const [isUploading, setIsUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
-  const showToast = options.showToast ?? true;
 
   const uploadImage = useCallback(
     async (file: File): Promise<string | null> => {
@@ -28,19 +26,19 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
 
       try {
         const provider = StorageFactory.createProvider({
-          provider: options.provider || 'aws-s3-proxy',
+          provider: options.provider || "aws-s3-proxy",
           bucket: process.env.NEXT_PUBLIC_AWS_S3_BUCKET,
           region: process.env.NEXT_PUBLIC_AWS_REGION,
           maxFileSize: options.maxFileSize || 5 * 1024 * 1024,
-          allowedTypes: options.allowedTypes || ['image/*'],
+          allowedTypes: options.allowedTypes || ["image/*"],
           multiple: false,
-          folder: options.folder || 'uploads',
+          folder: options.folder || "uploads",
         });
 
-        const uploadedFile = await provider.upload(file, '0', {
-          folder: options.folder || 'uploads',
+        const uploadedFile = await provider.upload(file, "0", {
+          folder: options.folder || "uploads",
           maxFileSize: options.maxFileSize || 5 * 1024 * 1024,
-          allowedTypes: options.allowedTypes || ['image/*'],
+          allowedTypes: options.allowedTypes || ["image/*"],
         });
 
         if (uploadedFile) {
@@ -50,35 +48,31 @@ export function useImageUpload(options: UseImageUploadOptions = {}) {
           // Clean up temporary URL
           URL.revokeObjectURL(tempPreviewUrl);
 
-          if (showToast) {
-            toast({
-              title: 'Success',
-              description: 'Image uploaded successfully',
-            });
-          }
+          // toast({
+          //   title: "Success",
+          //   description: "Image uploaded successfully",
+          // });
 
           return uploadedFile.url;
         } else {
-          throw new Error('No file uploaded');
+          throw new Error("No file uploaded");
         }
       } catch (error: any) {
         setPreviewUrl(null);
         URL.revokeObjectURL(tempPreviewUrl);
 
-        if (showToast) {
-          toast({
-            title: 'Upload failed',
-            description: error.message || 'Failed to upload image',
-            variant: 'destructive',
-          });
-        }
+        toast({
+          title: "Upload failed",
+          description: error.message || "Failed to upload image",
+          variant: "destructive",
+        });
 
         return null;
       } finally {
         setIsUploading(false);
       }
     },
-    [options, toast, showToast]
+    [options, toast],
   );
 
   const clearPreview = useCallback(() => {

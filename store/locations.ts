@@ -1,15 +1,14 @@
-import type { Location } from '../types/location';
-import { createEntity } from './entityFactory';
+import { Location } from "@/types/location";
+import { createEntity } from "./entityFactory";
 
 export const locations = createEntity<Location>({
-  reducerPath: 'locationsApi',
-  entityEndpoint: 'locations',
-  entityName: 'Location',
+  reducerPath: "locationsApi",
+  entityEndpoint: "locations",
+  entityName: "Location",
 });
-
 export const {
-  useGetAllQuery,
-  useGetByIdQuery,
+  useGetAllQuery: useGetLocationsQuery,
+  useGetByIdQuery: useGetLocationQuery,
   useCreateMutation: useCreateLocationMutation,
   useUpdateMutation: useUpdateLocationMutation,
   useDeleteMutation: useDeleteLocationMutation,

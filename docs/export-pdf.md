@@ -33,32 +33,32 @@ Templates are located in `/lib/pdf-templates/` and provide custom PDF layouts:
 ### For Delivery Reports
 
 ```tsx
-import DeliveryPdfExportButton from '@/components/dashboard/DeliveryPdfExportButton';
+import DeliveryPdfExportButton from "@/components/dashboard/DeliveryPdfExportButton";
 
-<DeliveryPdfExportButton delivery={deliveryData} />;
+<DeliveryPdfExportButton delivery={deliveryData} />
 ```
 
 ### For Custom Data Types
 
 ```tsx
-import GenericPdfExportButton from '@/components/dashboard/GenericPdfExportButton';
+import GenericPdfExportButton from "@/components/dashboard/GenericPdfExportButton";
 
 const exportOptions = {
-  title: 'My Report',
-  fileName: 'my-report.pdf',
+  title: "My Report",
+  fileName: "my-report.pdf",
   categories: [
     {
-      name: 'Basic Info',
+      name: "Basic Info",
       fields: [
-        { key: 'name', label: 'Name', value: data.name },
-        { key: 'email', label: 'Email', value: data.email },
-      ],
-    },
+        { key: "name", label: "Name", value: data.name },
+        { key: "email", label: "Email", value: data.email }
+      ]
+    }
   ],
-  customTemplate: myCustomTemplate, // Optional
+  customTemplate: myCustomTemplate // Optional
 };
 
-<GenericPdfExportButton data={myData} options={exportOptions} />;
+<GenericPdfExportButton data={myData} options={exportOptions} />
 ```
 
 ## Creating Custom Templates
@@ -71,12 +71,16 @@ const exportOptions = {
 ### Template Example
 
 ```typescript
-import jsPDF from 'jspdf';
+import jsPDF from "jspdf";
 
-export function generateMyCustomTemplate(pdf: jsPDF, data: any, options: any) {
+export function generateMyCustomTemplate(
+  pdf: jsPDF, 
+  data: any, 
+  options: any
+) {
   // Your custom PDF generation logic here
   pdf.setFontSize(16);
-  pdf.text('Custom Report', 20, 20);
+  pdf.text("Custom Report", 20, 20);
   // ... more layout code
 }
 ```
@@ -97,7 +101,7 @@ export function generateMyCustomTemplate(pdf: jsPDF, data: any, options: any) {
 The system automatically loads the company logo from `/images/orbit-logo.png`:
 
 ```typescript
-import { loadPublicImageAsBase64 } from '@/lib/pdf-templates/image-utils';
+import { loadPublicImageAsBase64 } from "@/lib/pdf-templates/image-utils";
 
 // In your template function
 const logoBase64 = await loadPublicImageAsBase64('/images/orbit-logo.png');
@@ -105,7 +109,6 @@ pdf.addImage(logoBase64, 'PNG', x, y, width, height);
 ```
 
 **Features:**
-
 - Automatic base64 conversion
 - Error handling with fallback
 - Supports both PNG and other formats

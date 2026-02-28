@@ -1,49 +1,49 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useState } from 'react';
-import * as Yup from 'yup';
-import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Logo from '@/images/logo-image.png';
-import AuthDesign from '@/images/auth-design2.png';
-import GoogleIcon from '@/images/google-icon.svg';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import * as Yup from "yup";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Logo from "@/images/logo-image.png";
+import AuthDesign from "@/images/auth-design2.png";
+import GoogleIcon from "@/images/google-icon.svg";
 
 // Form constants
 const initialValues = {
-  email: '',
-  password: '',
+  email: "",
+  password: "",
 };
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  password: Yup.string().required('Password is required'),
+    .email("Invalid email address")
+    .required("Email is required"),
+  password: Yup.string().required("Password is required"),
 });
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const handleSubmit = async (values: typeof initialValues) => {
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const result = await signIn('credentials', {
+      const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
         redirect: false,
@@ -51,22 +51,22 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError(
-          result.error ?? 'Invalid email or password. Please try again.'
+          result.error ?? "Invalid email or password. Please try again."
         );
         setIsLoading(false);
       } else if (result?.ok) {
         if (callbackUrl) {
           router.push(callbackUrl);
         } else {
-          router.push('/dashboard');
+          router.push("/dashboard");
         }
         router.refresh();
       }
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || 'An error occurred. Please try again.');
+        setError(err.message || "An error occurred. Please try again.");
       } else {
-        setError('An error occurred. Please try again.');
+        setError("An error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -160,7 +160,7 @@ export default function LoginPage() {
                       as={Input}
                       id="password"
                       name="password"
-                      type={showPassword ? 'text' : 'password'}
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       className="pl-12 pr-12 py-3 rounded-full border border-gray-200 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
                       onChange={handleChange}
@@ -173,7 +173,7 @@ export default function LoginPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
                       aria-label={
-                        showPassword ? 'Hide password' : 'Show password'
+                        showPassword ? "Hide password" : "Show password"
                       }
                     >
                       {showPassword ? (
@@ -210,7 +210,7 @@ export default function LoginPage() {
                   <Link
                     href="/auth/forgot-password"
                     className="text-sm font-semibold hover:opacity-80 transition-opacity flex items-center gap-1"
-                    style={{ color: 'rgba(95, 0, 208, 1)' }}
+                    style={{ color: "rgba(95, 0, 208, 1)" }}
                   >
                     Forgot Password
                     <ArrowRight className="w-4 h-4" />
@@ -222,9 +222,9 @@ export default function LoginPage() {
                   type="submit"
                   disabled={isLoading || !isValid}
                   className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors mt-6 lg:mt-8"
-                  style={{ backgroundColor: 'rgba(95, 0, 208, 1)' }}
+                  style={{ backgroundColor: "rgba(95, 0, 208, 1)" }}
                 >
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? "Signing in..." : "Sign In"}
                   {!isLoading && <ArrowRight className="w-4 h-4" />}
                 </Button>
 
@@ -239,11 +239,11 @@ export default function LoginPage() {
 
                 {/* Sign Up Link */}
                 <p className="text-center text-gray-600 text-sm mt-4 lg:mt-6">
-                  Don&apos;t have an account?{' '}
+                  Don&apos;t have an account?{" "}
                   <Link
                     href="/auth/signup"
                     className="font-semibold hover:opacity-80 transition-opacity"
-                    style={{ color: 'rgba(95, 0, 208, 1)' }}
+                    style={{ color: "rgba(95, 0, 208, 1)" }}
                   >
                     Sign Up
                   </Link>

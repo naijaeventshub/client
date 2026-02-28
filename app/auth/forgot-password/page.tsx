@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState } from 'react';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import * as Yup from 'yup';
-import { Mail } from 'lucide-react';
-import LogoImage from '@/images/logo-image.png';
-import AuthDesign3 from '@/images/auth-design3.png';
-import LockIcon from '@/images/lock-icon.svg';
+import Image from "next/image";
+import { useState } from "react";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import * as Yup from "yup";
+import { Mail } from "lucide-react";
+import LogoImage from "@/images/logo-image.png";
+import AuthDesign3 from "@/images/auth-design3.png";
+import LockIcon from "@/images/lock-icon.svg";
 
 // Form validation schema
 const forgotPasswordValidationSchema = Yup.object({
   email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email("Invalid email address")
+    .required("Email is required"),
 });
 
 // Form initial values
 const forgotPasswordInitialValues = {
-  email: '',
+  email: "",
 };
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleSubmit = async (
@@ -31,22 +31,22 @@ export default function ForgotPasswordPage() {
     { setSubmitting }: any
   ) => {
     setIsLoading(true);
-    setSubmitError('');
+    setSubmitError("");
     setSubmitSuccess(false);
 
     try {
       // Call forgot password API endpoint
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: values.email }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to send reset email');
+        throw new Error(error.message || "Failed to send reset email");
       }
 
       setSubmitSuccess(true);
@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
       if (error instanceof Error) {
         setSubmitError(error.message);
       } else {
-        setSubmitError('An unexpected error occurred. Please try again.');
+        setSubmitError("An unexpected error occurred. Please try again.");
       }
     } finally {
       setIsLoading(false);
@@ -140,11 +140,11 @@ export default function ForgotPasswordPage() {
                   disabled={isLoading || !isValid || !values.email}
                   className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors mt-6 lg:mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    backgroundColor: 'rgba(95, 0, 208, 1)',
+                    backgroundColor: "rgba(95, 0, 208, 1)",
                   }}
                   aria-label="Reset password"
                 >
-                  <span>{isLoading ? 'Sending...' : 'Reset Password'}</span>
+                  <span>{isLoading ? "Sending..." : "Reset Password"}</span>
                   <Image src={LockIcon} alt="Lock" width={18} height={22} />
                 </button>
               </Form>

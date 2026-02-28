@@ -3,37 +3,37 @@ import {
   formatCustomDateRange,
   type CustomDateRange,
   type DateFilterOption,
-} from '@/lib/date-utils';
-import type { RootState } from '@/store';
+} from "@/lib/date-utils";
+import type { RootState } from "@/store";
 import {
   setCustomDateRange,
   setDateRange,
   setSelectedFilter,
-} from '@/store/dashboard-filters';
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+} from "@/store/dashboard-filters";
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 export function useDateFilter() {
   const dispatch = useDispatch();
   const selectedFilter = useSelector(
-    (state: RootState) => state.dashboardFilters.selectedFilter
+    (state: RootState) => state.dashboardFilters.selectedFilter,
   );
   const customDateRange = useSelector(
-    (state: RootState) => state.dashboardFilters.customDateRange
+    (state: RootState) => state.dashboardFilters.customDateRange,
   );
 
   const handleFilterChange = useCallback(
     (filter: DateFilterOption) => {
       dispatch(setSelectedFilter(filter));
 
-      if (filter !== 'Custom') {
+      if (filter !== "Custom") {
         // Clear custom date range for non-custom filters
         dispatch(setCustomDateRange({}));
         const dateRange = calculateDateRange(filter);
         dispatch(setDateRange(dateRange));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleCustomDateChange = useCallback(
@@ -46,16 +46,16 @@ export function useDateFilter() {
       dispatch(setCustomDateRange(customRange));
 
       if (range.from && range.to) {
-        const dateRange = calculateDateRange('Custom', range);
+        const dateRange = calculateDateRange("Custom", range);
         dispatch(setDateRange(dateRange));
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   const getDisplayText = useCallback(() => {
     if (
-      selectedFilter === 'Custom' &&
+      selectedFilter === "Custom" &&
       customDateRange.from &&
       customDateRange.to
     ) {

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import { MapPin } from 'lucide-react';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { MapPin } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // Google Places API types
 interface PlaceResult {
@@ -58,9 +58,9 @@ interface GoogleMapsAPI {
 
 export function GooglePlacesAutocomplete({
   onLocationSelect,
-  initialValue = '',
-  placeholder = 'Search for a location...',
-  label = 'Location',
+  initialValue = "",
+  placeholder = "Search for a location...",
+  label = "Location",
   className,
   disabled = false,
 }: GooglePlacesAutocompleteProps) {
@@ -75,23 +75,21 @@ export function GooglePlacesAutocomplete({
     const components = place.address_components;
 
     // Extract coordinates - they might be functions or properties
-    const lat =
-      typeof place.geometry.location.lat === 'function'
-        ? place.geometry.location.lat()
-        : place.geometry.location.lat;
-    const lng =
-      typeof place.geometry.location.lng === 'function'
-        ? place.geometry.location.lng()
-        : place.geometry.location.lng;
+    const lat = typeof place.geometry.location.lat === 'function'
+      ? place.geometry.location.lat()
+      : place.geometry.location.lat;
+    const lng = typeof place.geometry.location.lng === 'function'
+      ? place.geometry.location.lng()
+      : place.geometry.location.lng;
 
     // Initialize with empty values
     const parsed: ParsedLocation = {
-      street: '',
-      city: '',
-      state: '',
-      region: '',
-      country: '',
-      postal_code: '',
+      street: "",
+      city: "",
+      state: "",
+      region: "",
+      country: "",
+      postal_code: "",
       latitude: lat,
       longitude: lng,
       formatted_address: place.formatted_address,
@@ -101,19 +99,17 @@ export function GooglePlacesAutocomplete({
     components.forEach((component) => {
       const types = component.types;
 
-      if (types.includes('street_number') || types.includes('route')) {
-        parsed.street = parsed.street
-          ? `${parsed.street} ${component.long_name}`
-          : component.long_name;
-      } else if (types.includes('locality')) {
+      if (types.includes("street_number") || types.includes("route")) {
+        parsed.street = parsed.street ? `${parsed.street} ${component.long_name}` : component.long_name;
+      } else if (types.includes("locality")) {
         parsed.city = component.long_name;
-      } else if (types.includes('administrative_area_level_1')) {
+      } else if (types.includes("administrative_area_level_1")) {
         parsed.state = component.long_name;
-      } else if (types.includes('administrative_area_level_2')) {
+      } else if (types.includes("administrative_area_level_2")) {
         parsed.region = component.long_name;
-      } else if (types.includes('country')) {
+      } else if (types.includes("country")) {
         parsed.country = component.long_name;
-      } else if (types.includes('postal_code')) {
+      } else if (types.includes("postal_code")) {
         parsed.postal_code = component.long_name;
       }
     });
@@ -131,7 +127,7 @@ export function GooglePlacesAutocomplete({
 
       // Load Google Maps API if not already loaded
       if (!document.querySelector('script[src*="maps.googleapis.com"]')) {
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`;
         script.async = true;
         script.defer = true;
@@ -139,7 +135,7 @@ export function GooglePlacesAutocomplete({
           setIsLoaded(true);
         };
         script.onerror = () => {
-          console.error('Failed to load Google Maps API');
+          console.error("Failed to load Google Maps API");
         };
         document.head.appendChild(script);
       }
@@ -155,25 +151,19 @@ export function GooglePlacesAutocomplete({
     const initializeAutocomplete = () => {
       if (autocompleteInstanceRef.current) {
         // Clean up existing instance
-        (window.google as any).maps.event.clearInstanceListeners(
-          autocompleteInstanceRef.current
-        );
+        (window.google as any).maps.event.clearInstanceListeners(autocompleteInstanceRef.current);
       }
 
-      autocompleteInstanceRef.current = new (
-        window.google as any
-      ).maps.places.Autocomplete(autocompleteRef.current, {
-        types: ['address'],
-        fields: [
-          'place_id',
-          'formatted_address',
-          'geometry',
-          'address_components',
-        ],
-      });
+      autocompleteInstanceRef.current = new (window.google as any).maps.places.Autocomplete(
+        autocompleteRef.current,
+        {
+          types: ["address"],
+          fields: ["place_id", "formatted_address", "geometry", "address_components"],
+        }
+      );
 
       // Listen for place selection
-      autocompleteInstanceRef.current.addListener('place_changed', () => {
+      autocompleteInstanceRef.current.addListener("place_changed", () => {
         const place = autocompleteInstanceRef.current.getPlace();
 
         if (place.place_id) {
@@ -184,21 +174,15 @@ export function GooglePlacesAutocomplete({
             // Ensure coordinates are numbers, not strings
             const finalLocation = {
               ...parsedLocation,
-              latitude:
-                typeof parsedLocation.latitude === 'string'
-                  ? parseFloat(parsedLocation.latitude)
-                  : parsedLocation.latitude,
-              longitude:
-                typeof parsedLocation.longitude === 'string'
-                  ? parseFloat(parsedLocation.longitude)
-                  : parsedLocation.longitude,
+              latitude: typeof parsedLocation.latitude === 'string' ? parseFloat(parsedLocation.latitude) : parsedLocation.latitude,
+              longitude: typeof parsedLocation.longitude === 'string' ? parseFloat(parsedLocation.longitude) : parsedLocation.longitude,
             };
 
             // Clear the input after selection to show it was successful
-            setInputValue('');
+            setInputValue("");
             onLocationSelect(finalLocation);
           } catch (error) {
-            console.error('Error parsing place result:', error);
+            console.error("Error parsing place result:", error);
           } finally {
             setIsLoading(false);
           }
@@ -215,9 +199,7 @@ export function GooglePlacesAutocomplete({
   useEffect(() => {
     return () => {
       if (autocompleteInstanceRef.current) {
-        (window.google as any)?.maps?.event?.clearInstanceListeners(
-          autocompleteInstanceRef.current
-        );
+        (window.google as any)?.maps?.event?.clearInstanceListeners(autocompleteInstanceRef.current);
       }
     };
   }, []);
@@ -227,15 +209,8 @@ export function GooglePlacesAutocomplete({
   };
 
   return (
-    <div className={cn('space-y-3', className)}>
-      {label && (
-        <Label
-          htmlFor="location-search"
-          className="text-sm font-medium text-gray-700"
-        >
-          {label}
-        </Label>
-      )}
+    <div className={cn("space-y-3", className)}>
+      {label && <Label htmlFor="location-search" className="text-sm font-medium text-gray-700">{label}</Label>}
       <div className="relative">
         <Input
           ref={autocompleteRef}
@@ -245,7 +220,10 @@ export function GooglePlacesAutocomplete({
           onChange={handleInputChange}
           placeholder={placeholder}
           disabled={disabled || !isLoaded}
-          className={cn('w-full h-11 text-base', isLoading && 'opacity-50')}
+          className={cn(
+            "w-full h-11 text-base",
+            isLoading && "opacity-50"
+          )}
         />
         {isLoading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">

@@ -1,15 +1,15 @@
-import { DashboardHeader } from '@/components/dashboard/header';
-import { DashboardSidebar } from '@/components/dashboard/sidebar';
-import { authOptions } from '@/lib/api/auth';
-import { getServerSession } from 'next-auth';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
+import { DashboardHeader } from "@/components/layout/dashboard/header";
+import { DashboardSidebar } from "@/components/layout/dashboard/sidebar";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function NotFound() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    redirect('/auth/login');
+    redirect("/auth/login");
   }
 
   return (
@@ -20,9 +20,7 @@ export default async function NotFound() {
         <main className="flex-1 p-6 flex flex-col items-center justify-center">
           <div className="text-center">
             <h1 className="text-5xl font-bold text-[#444444] mb-4">404</h1>
-            <p className="text-lg text-[#ababab] mb-6">
-              Page not found in dashboard.
-            </p>
+            <p className="text-lg text-[#ababab] mb-6">Page not found in dashboard.</p>
             <Link href="/dashboard">
               <span className="inline-block px-6 py-2 bg-[#ff6600] text-white rounded hover:bg-[#ff6b00] transition">
                 Go to Dashboard Home

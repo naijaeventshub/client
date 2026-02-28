@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { useEffect, useRef } from 'react';
+import { cn } from "@/lib/utils";
+import { useEffect, useRef } from "react";
 
 interface LocationMapProps {
   latitude: number | string;
@@ -16,7 +16,7 @@ export function LocationMap({
   longitude,
   address,
   className,
-  height = '300px',
+  height = "300px"
 }: LocationMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -25,13 +25,10 @@ export function LocationMap({
   // Convert to numbers and validate
   const latNum = Number(latitude);
   const lngNum = Number(longitude);
-  const isValidCoords =
-    !isNaN(latNum) &&
-    !isNaN(lngNum) &&
-    latNum >= -90 &&
-    latNum <= 90 &&
-    lngNum >= -180 &&
-    lngNum <= 180;
+  const isValidCoords = !isNaN(latNum) && !isNaN(lngNum) &&
+    latNum >= -90 && latNum <= 90 &&
+    lngNum >= -180 && lngNum <= 180;
+
 
   useEffect(() => {
     if (!mapRef.current || !isValidCoords) return;
@@ -49,16 +46,13 @@ export function LocationMap({
         };
 
         // Create map instance
-        mapInstanceRef.current = new (window as any).google.maps.Map(
-          mapRef.current,
-          mapOptions
-        );
+        mapInstanceRef.current = new (window as any).google.maps.Map(mapRef.current, mapOptions);
 
         // Create marker
         markerRef.current = new (window as any).google.maps.Marker({
           position: { lat: latNum, lng: lngNum },
           map: mapInstanceRef.current,
-          title: address || 'Selected Location',
+          title: address || "Selected Location",
           animation: (window as any).google.maps.Animation.DROP,
         });
 
@@ -76,7 +70,7 @@ export function LocationMap({
             `,
           });
 
-          markerRef.current.addListener('click', () => {
+          markerRef.current.addListener("click", () => {
             infoWindow.open(mapInstanceRef.current, markerRef.current);
           });
         }
@@ -95,9 +89,7 @@ export function LocationMap({
         markerRef.current.setMap(null);
       }
       if (mapInstanceRef.current) {
-        (window as any).google?.maps?.event?.clearInstanceListeners(
-          mapInstanceRef.current
-        );
+        (window as any).google?.maps?.event?.clearInstanceListeners(mapInstanceRef.current);
       }
     };
   }, []);
@@ -106,9 +98,10 @@ export function LocationMap({
     return (
       <div
         className={cn(
-          'flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg',
+          "flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg",
           className
         )}
+        // eslint-disable-next-line react/forbid-dom-props
         style={{ height }}
       >
         <div className="text-center text-gray-500">
@@ -120,10 +113,11 @@ export function LocationMap({
   }
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn("relative", className)}>
       <div
         ref={mapRef}
         className="w-full rounded-lg border border-gray-200 overflow-hidden"
+        // eslint-disable-next-line react/forbid-dom-props
         style={{ height }}
       />
       <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded shadow-sm text-xs text-gray-600 font-mono">

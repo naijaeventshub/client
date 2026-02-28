@@ -57,32 +57,27 @@ NEXT_PUBLIC_STORAGE_PROVIDER=aws-s3-proxy  # Default storage provider
 ### SOLID Principles Implementation
 
 #### Single Responsibility Principle (SRP)
-
 - **StorageProvider**: Handles file upload logic
 - **StorageFactory**: Creates provider instances
 - **Utils**: Provides validation and error handling
 - **CORS Utils**: Manages cross-origin requests
 
 #### Open/Closed Principle (OCP)
-
 - New storage providers can be added without modifying existing code
 - Configuration is extensible through interfaces
 - Factory pattern allows easy extension
 
 #### Liskov Substitution Principle (LSP)
-
 - All storage providers implement the same `StorageProvider` interface
 - Providers can be swapped without breaking functionality
 - Base class provides common functionality
 
 #### Interface Segregation Principle (ISP)
-
 - Focused interfaces (`StorageProvider`, `StorageConfig`)
 - Clients only depend on methods they use
 - No fat interfaces
 
 #### Dependency Inversion Principle (DIP)
-
 - High-level modules depend on abstractions
 - Concrete implementations injected through factory
 - Dependency injection through constructor
@@ -131,21 +126,18 @@ app/api/upload/
 ## 🔧 Storage Providers
 
 ### AWS S3 Direct (`aws-s3`)
-
 - **Description**: Direct upload to AWS S3 using presigned URLs
 - **Performance**: ⭐⭐⭐⭐⭐ (Fastest)
 - **CORS**: Requires S3 bucket CORS configuration
 - **Use Case**: High-performance direct uploads
 
 ### AWS S3 Proxy (`aws-s3-proxy`) ⭐ **Recommended**
-
 - **Description**: Upload through server-side proxy to AWS S3
 - **Performance**: ⭐⭐⭐⭐ (Very Good)
 - **CORS**: No CORS issues (server-to-server communication)
 - **Use Case**: Production applications, reliable uploads
 
 ### Azure Blob Storage (`azure-blob`)
-
 - **Description**: Upload to Microsoft Azure Blob Storage
 - **Performance**: ⭐⭐⭐⭐ (Very Good)
 - **CORS**: No CORS issues (server-to-server communication)
@@ -153,14 +145,12 @@ app/api/upload/
 - **Use Case**: Enterprise applications, Microsoft ecosystem
 
 ### Cloudinary (`cloudinary`)
-
 - **Description**: Upload to Cloudinary cloud storage
 - **Performance**: ⭐⭐⭐⭐ (Very Good)
 - **Features**: Image optimization, transformation, CDN, AI-powered features
 - **Use Case**: Image-heavy applications, media management
 
 ### Local (`local`)
-
 - **Description**: Upload to local server storage
 - **Performance**: ⭐⭐⭐ (Good)
 - **Use Case**: Development and testing

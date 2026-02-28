@@ -1,10 +1,10 @@
-import { Setting } from './../types/setting';
-import { createEntity } from './entityFactory';
+import { Setting } from "./../types/setting";
+import { createEntity } from "./entityFactory";
 
 export const settings = createEntity<Setting>({
-  reducerPath: 'settingsApi',
-  entityEndpoint: 'settings',
-  entityName: 'Setting',
+  reducerPath: "settingsApi",
+  entityEndpoint: "settings",
+  entityName: "Setting",
 });
 export const {
   useGetAllQuery: useGetSettingsQuery,

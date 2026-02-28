@@ -1,14 +1,8 @@
-'use client';
+"use client";
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { FileUploadConfig, useFileUpload } from '@/hooks/use-file-upload';
 import { UploadResult } from '@/lib/storage/storage-provider';
@@ -24,7 +18,7 @@ import {
   RefreshCw,
   Trash2,
   Upload,
-  X,
+  X
 } from 'lucide-react';
 import Image from 'next/image';
 import React, { useCallback, useRef, useState } from 'react';
@@ -64,8 +58,8 @@ export function FileUpload({
   onUploadComplete,
   onUploadError,
   className,
-  title = 'File Upload',
-  description = 'Drag and drop files here, or click to select files',
+  title = "File Upload",
+  description = "Drag and drop files here, or click to select files",
   showPreview = true,
   showProgress = true,
   maxFiles = 10,
@@ -96,38 +90,32 @@ export function FileUpload({
     setIsDragOver(false);
   }, []);
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragOver(false);
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
 
-      const droppedFiles = Array.from(e.dataTransfer.files);
-      if (droppedFiles.length > maxFiles) {
-        onUploadError?.(`Maximum ${maxFiles} files allowed`);
-        return;
-      }
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    if (droppedFiles.length > maxFiles) {
+      onUploadError?.(`Maximum ${maxFiles} files allowed`);
+      return;
+    }
 
-      addFiles(droppedFiles);
-    },
-    [addFiles, maxFiles, onUploadError]
-  );
+    addFiles(droppedFiles);
+  }, [addFiles, maxFiles, onUploadError]);
 
-  const handleFileSelect = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const selectedFiles = Array.from(e.target.files || []);
-      if (selectedFiles.length > maxFiles) {
-        onUploadError?.(`Maximum ${maxFiles} files allowed`);
-        return;
-      }
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length > maxFiles) {
+      onUploadError?.(`Maximum ${maxFiles} files allowed`);
+      return;
+    }
 
-      addFiles(selectedFiles);
-      // Reset input value to allow selecting the same file again
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    },
-    [addFiles, maxFiles, onUploadError]
-  );
+    addFiles(selectedFiles);
+    // Reset input value to allow selecting the same file again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [addFiles, maxFiles, onUploadError]);
 
   const handleUpload = useCallback(async () => {
     try {
@@ -138,22 +126,19 @@ export function FileUpload({
     }
   }, [uploadFiles, onUploadComplete, onUploadError]);
 
-  const handleRetry = useCallback(
-    async (fileId: string) => {
-      try {
-        await retryUpload(fileId);
-      } catch (error: any) {
-        onUploadError?.(error.message);
-      }
-    },
-    [retryUpload, onUploadError]
-  );
+  const handleRetry = useCallback(async (fileId: string) => {
+    try {
+      await retryUpload(fileId);
+    } catch (error: any) {
+      onUploadError?.(error.message);
+    }
+  }, [retryUpload, onUploadError]);
 
   const totalFiles = files.length + uploadedFiles.length;
   const hasFiles = totalFiles > 0;
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div className={cn("space-y-4", className)}>
       {/* Upload Area */}
       <Card>
         <CardHeader>
@@ -166,11 +151,11 @@ export function FileUpload({
         <CardContent>
           <div
             className={cn(
-              'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
+              "border-2 border-dashed rounded-lg p-8 text-center transition-colors",
               isDragOver
-                ? 'border-orange-500 bg-orange-50'
-                : 'border-gray-300 hover:border-gray-400',
-              isUploading && 'pointer-events-none opacity-50'
+                ? "border-orange-500 bg-orange-50"
+                : "border-gray-300 hover:border-gray-400",
+              isUploading && "pointer-events-none opacity-50"
             )}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -178,11 +163,11 @@ export function FileUpload({
           >
             <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-lg font-medium text-gray-900 mb-2">
-              {isDragOver ? 'Drop files here' : 'Choose files to upload'}
+              {isDragOver ? "Drop files here" : "Choose files to upload"}
             </p>
             <p className="text-sm text-gray-500 mb-4">
-              {config.allowedTypes?.join(', ') || 'Any file type'} • Max{' '}
-              {formatFileSize(config.maxFileSize || 10 * 1024 * 1024)}
+              {config.allowedTypes?.join(', ') || 'Any file type'} •
+              Max {formatFileSize(config.maxFileSize || 10 * 1024 * 1024)}
             </p>
             <Button
               onClick={() => fileInputRef.current?.click()}
@@ -272,15 +257,14 @@ export function FileUpload({
                   </div>
 
                   <div className="flex items-center space-x-2">
-                    {showProgress &&
-                      uploadProgress[index.toString()] !== undefined && (
-                        <div className="w-20">
-                          <Progress
-                            value={uploadProgress[index.toString()]}
-                            className="h-2"
-                          />
-                        </div>
-                      )}
+                    {showProgress && uploadProgress[index.toString()] !== undefined && (
+                      <div className="w-20">
+                        <Progress
+                          value={uploadProgress[index.toString()]}
+                          className="h-2"
+                        />
+                      </div>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
@@ -372,9 +356,7 @@ export function FileUpload({
                     </div>
                   )}
                   <p className="text-sm font-medium truncate">{file.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {formatFileSize(file.size)}
-                  </p>
+                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                 </div>
               ))}
             </div>

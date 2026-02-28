@@ -1,15 +1,14 @@
-import type { Role } from '../types/role';
-import { createEntity } from './entityFactory';
+import { Role } from "@/types/role";
+import { createEntity } from "./entityFactory";
 
 export const roles = createEntity<Role>({
-  reducerPath: 'rolesApi',
-  entityEndpoint: 'roles',
-  entityName: 'Role',
+  reducerPath: "rolesApi",
+  entityEndpoint: "roles",
+  entityName: "Role",
 });
-
 export const {
-  useGetAllQuery,
-  useGetByIdQuery,
+  useGetAllQuery: useGetRolesQuery,
+  useGetByIdQuery: useGetRoleQuery,
   useCreateMutation: useCreateRoleMutation,
   useUpdateMutation: useUpdateRoleMutation,
   useDeleteMutation: useDeleteRoleMutation,

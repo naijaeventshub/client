@@ -1,10 +1,10 @@
-import { AuditLog } from '@/types/audit-log';
-import { createEntity } from './entityFactory';
+import { AuditLog } from "@/types/audit-log";
+import { createEntity } from "./entityFactory";
 
 export const auditLogs = createEntity<AuditLog>({
-  reducerPath: 'auditLogsApi',
-  entityEndpoint: 'audit-logs',
-  entityName: 'AuditLog',
+  reducerPath: "auditLogsApi",
+  entityEndpoint: "audit-logs",
+  entityName: "AuditLog",
 });
 
 export const {

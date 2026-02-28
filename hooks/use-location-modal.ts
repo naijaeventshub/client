@@ -1,35 +1,41 @@
-'use client';
+import { useState } from "react";
 
-import { useState, useCallback, useRef } from 'react';
+export interface LocationModalHook {
+  locationModalOpen: boolean;
+  setLocationModalOpen: (open: boolean) => void;
+  handleLocationCreated: (locationData: any, locationId: string) => void;
+  handleFieldUpdate: (fieldName: string, value: any) => void;
+  formRef: any;
+  setFormRef: (ref: any) => void;
+}
 
-export function useLocationModal() {
+export function useLocationModal(): LocationModalHook {
   const [locationModalOpen, setLocationModalOpen] = useState(false);
-  const formRef = useRef<any>(null);
+  const [formRef, setFormRef] = useState<any>(null);
 
-  const setFormRef = useCallback((ref: any) => {
-    formRef.current = ref;
-  }, []);
+  const handleLocationCreated = (locationData: any, locationId: string) => {
+    // Auto-fill address field with location info (excluding lat/long)
+    if (formRef && formRef.setFieldValue) {
+      const addressParts = [
+        locationData.street,
+        locationData.city,
+        locationData.state,
+        locationData.country,
+        locationData.postal_code,
+      ].filter(Boolean);
 
-  const handleFieldUpdate = useCallback((fieldName: string, value: any) => {
-    if (formRef.current && formRef.current.setFieldValue) {
-      formRef.current.setFieldValue(fieldName, value);
+      const formattedAddress = addressParts.join(", ");
+      formRef.setFieldValue("address", formattedAddress);
+      formRef.setFieldValue("location_id", locationId);
     }
-  }, []);
+    setLocationModalOpen(false);
+  };
 
-  const handleLocationCreated = useCallback(
-    (locationData: any, locationId: string) => {
-      if (formRef.current && formRef.current.setFieldValue) {
-        formRef.current.setFieldValue('location_uuid', locationId);
-        formRef.current.setFieldValue('location_data', locationData);
-        // Map common fields if they exist in the parent form
-        formRef.current.setFieldValue('street', locationData.street);
-        formRef.current.setFieldValue('city', locationData.city);
-        formRef.current.setFieldValue('state', locationData.state);
-        formRef.current.setFieldValue('country', locationData.country);
-      }
-    },
-    []
-  );
+  const handleFieldUpdate = (fieldName: string, value: any) => {
+    if (formRef && formRef.setFieldValue) {
+      formRef.setFieldValue(fieldName, value);
+    }
+  };
 
   return {
     locationModalOpen,

@@ -1,25 +1,18 @@
-'use client';
+"use client"
 
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 interface ConfirmationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  description: string;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: 'default' | 'destructive';
-  isLoading?: boolean;
+  isOpen: boolean
+  onClose: () => void
+  onConfirm: () => void
+  title: string
+  description: string
+  confirmText?: string
+  cancelText?: string
+  variant?: "default" | "destructive"
+  isLoading?: boolean
 }
 
 export function ConfirmationModal({
@@ -28,9 +21,9 @@ export function ConfirmationModal({
   onConfirm,
   title,
   description,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
-  variant = 'default',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  variant = "default",
   isLoading = false,
 }: ConfirmationModalProps) {
   return (
@@ -41,14 +34,22 @@ export function ConfirmationModal({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={isLoading}
+          >
             {cancelText}
           </Button>
-          <Button variant={variant} onClick={onConfirm} disabled={isLoading}>
-            {isLoading ? 'Processing...' : confirmText}
+          <Button
+            variant={variant}
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? "Processing..." : confirmText}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

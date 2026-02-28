@@ -3,7 +3,7 @@
  * These can be reused across different forms and components
  */
 
-import type { User } from '@/types/user';
+import { User } from "@/types/user";
 
 export interface BaseEntity {
   name?: string;
@@ -15,10 +15,10 @@ export interface BaseEntity {
  * Format user display as "Full Name (email)" or fallback to email
  */
 export const userFullNameEmailFormatter = (user: User): string => {
-  const first_name = user.first_name || '';
-  const last_name = user.last_name || '';
-  const email = user.email || '';
-  const fullName = `${first_name} ${last_name}`.trim();
+  const firstName = user.first_name || "";
+  const lastName = user.last_name || "";
+  const email = user.email || "";
+  const fullName = `${firstName} ${lastName}`.trim();
   return fullName ? `${fullName} (${email})` : email;
 };
 
@@ -26,33 +26,33 @@ export const userFullNameEmailFormatter = (user: User): string => {
  * Format user display as "Full Name" or fallback to email
  */
 export const userFullNameFormatter = (user: User): string => {
-  const first_name = user.first_name || '';
-  const last_name = user.last_name || '';
-  const fullName = `${first_name} ${last_name}`.trim();
-  return fullName || user.full_name || user.email || '';
+  const firstName = user.first_name || "";
+  const lastName = user.last_name || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+  return fullName || user.full_name || user.email || "";
 };
 
 /**
  * Format user display as email only
  */
 export const userEmailFormatter = (user: User): string => {
-  return user.email || '';
+  return user.email || "";
 };
 
 /**
  * Format entity display with name and optional secondary info
  */
 export const entityNameFormatter = (entity: BaseEntity): string => {
-  return entity.name || entity.title || '';
+  return entity.name || entity.title || "";
 };
 
 /**
  * Format entity display with name and ID
  */
 export const entityNameIdFormatter = (
-  entity: BaseEntity & { id?: string }
+  entity: BaseEntity & { id?: string },
 ): string => {
-  const name = entity.name || entity.title || '';
+  const name = entity.name || entity.title || "";
   const id = entity.id || entity.uuid;
   return name ? `${name} (${id})` : id;
 };
@@ -62,7 +62,7 @@ export const entityNameIdFormatter = (
  */
 export const createCombinedFormatter = <T>(
   fields: (keyof T)[],
-  separator: string = ' - '
+  separator: string = " - ",
 ) => {
   return (item: T): string => {
     const values = fields
@@ -79,36 +79,36 @@ export const createCombinedFormatter = <T>(
  */
 export const createPrimarySecondaryFormatter = <T>(
   primaryField: keyof T,
-  secondaryField: keyof T
+  secondaryField: keyof T,
 ) => {
   return (item: T): string => {
-    const primary = item[primaryField] ? String(item[primaryField]).trim() : '';
+    const primary = item[primaryField] ? String(item[primaryField]).trim() : "";
     const secondary = item[secondaryField]
       ? String(item[secondaryField]).trim()
-      : '';
+      : "";
 
     if (primary && secondary) {
       return `${primary} (${secondary})`;
     }
-    return primary || secondary || '';
+    return primary || secondary || "";
   };
 };
 
 export const formatFirstCharToUpperCase = (str: string): string => {
-  if (!str) return '';
+  if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-export const formatLabel = (str: string, substitute = ' '): string => {
-  if (!str) return '';
+export const formatLabel = (str: string, substitute = " "): string => {
+  if (!str) return "";
   return str.replaceAll(/_/g, substitute);
 };
 
 export const formatLabelToTitleCase = (
   str: string,
-  substitute = ' '
+  substitute = " ",
 ): string => {
-  if (!str) return '';
+  if (!str) return "";
   const formatted = formatLabel(str, substitute);
   return formatted
     .split(substitute)
@@ -118,9 +118,9 @@ export const formatLabelToTitleCase = (
 
 export const formatLabelToSentenceCase = (
   str: string,
-  substitute = ' '
+  substitute = " ",
 ): string => {
-  if (!str) return '';
+  if (!str) return "";
   const formatted = formatLabel(str, substitute).toLowerCase();
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 };

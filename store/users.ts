@@ -1,21 +1,10 @@
-import type { User } from '../types/user';
-import { createEntity } from './entityFactory';
-import {
-  USERS_QUERY,
-  GET_USER_BY_ID_QUERY,
-  GET_SINGLE_USER_QUERY,
-} from '@/graphql/queries/users';
+import type { User } from "../types/user";
+import { createEntity } from "./entityFactory";
 
 export const users = createEntity<User>({
-  reducerPath: 'usersApi',
-  entityEndpoint: 'users',
-  entityName: 'User',
-  useGraphQL: true,
-  graphqlQueries: {
-    getAll: USERS_QUERY,
-    getById: GET_USER_BY_ID_QUERY,
-    getSingle: GET_SINGLE_USER_QUERY,
-  },
+  reducerPath: "usersApi",
+  entityEndpoint: "users",
+  entityName: "User",
 });
 
 export const {

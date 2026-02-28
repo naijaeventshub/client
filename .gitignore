@@ -2,27 +2,14 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
 
 # next.js
+.next*
 /.next/
 /out/
 
 # production
 /build
-
-# misc
-.DS_Store
-*.pem
 
 # debug
 npm-debug.log*
@@ -30,9 +17,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
-!.env.example
 
 # vercel
 .vercel
@@ -40,14 +26,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-test-results
-playwright-report
+.DS_Store
 
-/notes
-.idea/
-.vscode/
+# Development tracking files (local use only)
+WORK_IN_PROGRESS.md
+COMPLETED_WORK.md
+
+
+# domain conig
+nginx.conf
+/domain_config
+
+# docker config
+Dockerfile
+docker-compose.yml
+
 package-lock.json
 .vscode
-lint_output.txt
-COMPLETED_WORK.md
-WORK_IN_PROGRESS.md

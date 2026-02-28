@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
-import BackgroundImage from '@/images/auth-design4.png';
-import LogoImage from '@/images/logo-image.png';
-import LockIcon from '@/images/lock-icon.svg';
+import Image from "next/image";
+import { useState, useRef, useEffect } from "react";
+import BackgroundImage from "@/images/auth-design4.png";
+import LogoImage from "@/images/logo-image.png";
+import LockIcon from "@/images/lock-icon.svg";
 
 const OTP_LENGTH = 6;
 const RESEND_COUNTDOWN = 23;
 
 export default function ResetPasswordOTPPage() {
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [countdown, setCountdown] = useState(RESEND_COUNTDOWN);
   const [canResend, setCanResend] = useState(false);
@@ -30,7 +30,7 @@ export default function ResetPasswordOTPPage() {
 
   const handleOtpChange = (index: number, value: string) => {
     // Only allow numbers
-    const numericValue = value.replace(/[^0-9]/g, '');
+    const numericValue = value.replace(/[^0-9]/g, "");
     if (numericValue.length > 1) return;
 
     const newOtp = [...otp];
@@ -47,50 +47,50 @@ export default function ResetPasswordOTPPage() {
     index: number,
     e: React.KeyboardEvent<HTMLInputElement>
   ) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const otpCode = otp.join('');
+  const otpCode = otp.join("");
   const isOtpComplete = otpCode.length === OTP_LENGTH;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setSuccess(false);
     setIsLoading(true);
 
     if (!isOtpComplete) {
-      setError('Please enter all 6 digits');
+      setError("Please enter all 6 digits");
       setIsLoading(false);
       return;
     }
 
     try {
       // Call OTP verification API
-      const response = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ otp: otpCode }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Invalid OTP code');
+        throw new Error(errorData.message || "Invalid OTP code");
       }
 
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = '/auth/reset-password-form';
+        window.location.href = "/auth/reset-password-form";
       }, 1500);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : 'Failed to verify OTP. Please try again.'
+          : "Failed to verify OTP. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -100,26 +100,26 @@ export default function ResetPasswordOTPPage() {
   const handleResendOtp = async () => {
     if (!canResend) return;
 
-    setError('');
+    setError("");
     setCountdown(RESEND_COUNTDOWN);
     setCanResend(false);
 
     try {
-      const response = await fetch('/api/auth/resend-otp', {
-        method: 'POST',
+      const response = await fetch("/api/auth/resend-otp", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to resend OTP');
+        throw new Error("Failed to resend OTP");
       }
 
-      setOtp(Array(OTP_LENGTH).fill(''));
+      setOtp(Array(OTP_LENGTH).fill(""));
       inputRefs.current[0]?.focus();
     } catch (err) {
-      setError('Failed to resend OTP. Please try again.');
+      setError("Failed to resend OTP. Please try again.");
     }
   };
 
@@ -200,11 +200,11 @@ export default function ResetPasswordOTPPage() {
             disabled={isLoading || !isOtpComplete}
             className="w-full py-3 rounded-full text-white font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
-              backgroundColor: 'rgba(95, 0, 208, 1)',
+              backgroundColor: "rgba(95, 0, 208, 1)",
             }}
             aria-label="Reset password"
           >
-            <span>{isLoading ? 'Verifying...' : 'Reset Password'}</span>
+            <span>{isLoading ? "Verifying..." : "Reset Password"}</span>
             <Image src={LockIcon} alt="Lock" width={18} height={22} />
           </button>
         </form>
@@ -212,7 +212,7 @@ export default function ResetPasswordOTPPage() {
         {/* Footer Text with Resend Link */}
         <div className="mt-8 text-center text-sm text-gray-600">
           <p>
-            Didn&apos;t receive the code?{' '}
+            Didn&apos;t receive the code?{" "}
             <button
               type="button"
               onClick={handleResendOtp}
@@ -220,8 +220,8 @@ export default function ResetPasswordOTPPage() {
               className="text-purple-600 hover:text-purple-700 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 color: canResend
-                  ? 'rgba(95, 0, 208, 1)'
-                  : 'rgba(95, 0, 208, 0.5)',
+                  ? "rgba(95, 0, 208, 1)"
+                  : "rgba(95, 0, 208, 0.5)",
               }}
               aria-label="Resend OTP code"
             >

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface PerformanceMetricsCardProps {
   title?: string;
@@ -14,14 +14,14 @@ interface PerformanceMetricsCardProps {
 }
 
 export default function PerformanceMetricsCard({
-  title = 'Performance Metrics',
+  title = "Performance Metrics",
   totalOrders = undefined,
   totalOrderValue = undefined,
   targetVolume = undefined,
-  currency = '₦',
+  currency = "₦",
   cummulativePerformance,
   dailyTarget,
-  monthlyTarget,
+  monthlyTarget
 }: PerformanceMetricsCardProps) {
   return (
     <Card>
@@ -45,11 +45,7 @@ export default function PerformanceMetricsCard({
             <div className="flex justify-between items-center">
               <span className="text-[#ababab]">Total Order Value</span>
               <span className="font-bold text-[#444444]">
-                {currency}
-                {Number(totalOrderValue).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {currency}{Number(totalOrderValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <Separator />
@@ -60,11 +56,7 @@ export default function PerformanceMetricsCard({
             <div className="flex justify-between items-center">
               <span className="text-[#ababab]">Annual Target</span>
               <span className="font-bold text-[#444444]">
-                {currency}
-                {Number(targetVolume).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {currency}{Number(targetVolume).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <Separator />
@@ -86,8 +78,7 @@ export default function PerformanceMetricsCard({
             <div className="flex justify-between items-center">
               <span className="text-[#ababab]">Daily Target</span>
               <span className="font-bold text-[#444444]">
-                {currency}
-                {dailyTarget.toLocaleString()}
+                {currency}{dailyTarget.toLocaleString()}
               </span>
             </div>
             <Separator />
@@ -98,11 +89,7 @@ export default function PerformanceMetricsCard({
             <div className="flex justify-between items-center">
               <span className="text-[#ababab]">Monthly Target</span>
               <span className="font-bold text-[#444444]">
-                {currency}
-                {monthlyTarget.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+                {currency}{monthlyTarget.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <Separator />

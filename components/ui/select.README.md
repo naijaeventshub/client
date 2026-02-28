@@ -67,7 +67,7 @@ import { userFullNameEmailFormatter } from "@/lib/label-formatters"
 ## Usage with Initial Search
 
 ```tsx
-import { SelectWithFetch } from '@/components/ui/select';
+import { SelectWithFetch } from "@/components/ui/select";
 
 <SelectWithFetch
   fetchUrl="/api/users"
@@ -109,7 +109,7 @@ import {
   userEmailFormatter, // "john@example.com"
   entityNameFormatter, // "Entity Name"
   entityNameIdFormatter, // "Entity Name (ID123)"
-} from '@/lib/label-formatters';
+} from "@/lib/label-formatters";
 ```
 
 ### Custom Formatters
@@ -174,13 +174,13 @@ When using with the `UserForm` component:
 ```tsx
 const fields = [
   {
-    name: 'user_id',
-    label: 'Select User',
-    type: 'selectWithFetch' as const,
-    fetchUrl: '/api/users',
-    valueKey: 'uuid',
+    name: "user_id",
+    label: "Select User",
+    type: "selectWithFetch" as const,
+    fetchUrl: "/api/users",
+    valueKey: "uuid",
     labelFormatter: userFullNameEmailFormatter,
-    placeholder: 'Choose a user...',
+    placeholder: "Choose a user...",
   },
 ];
 ```

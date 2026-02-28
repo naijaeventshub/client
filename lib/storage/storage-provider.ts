@@ -5,7 +5,7 @@ import {
   generateUniqueFileKey,
   validateFileSize,
   validateFileType,
-} from './utils';
+} from "./utils";
 
 export interface StorageConfig {
   folder?: string;
@@ -27,7 +27,7 @@ export interface StorageProvider {
   upload(
     file: File,
     fileId: string,
-    config: StorageConfig
+    config: StorageConfig,
   ): Promise<UploadResult>;
   validateConfig(): void;
   getProviderName(): string;
@@ -38,9 +38,9 @@ export abstract class BaseStorageProvider implements StorageProvider {
 
   constructor(config: StorageConfig) {
     this.config = {
-      folder: 'uploads',
+      folder: "uploads",
       maxFileSize: 10 * 1024 * 1024, // 10MB default
-      allowedTypes: ['image/*', 'application/pdf', 'text/*'],
+      allowedTypes: ["image/*", "application/pdf", "text/*"],
       ...config,
     };
   }
@@ -48,14 +48,14 @@ export abstract class BaseStorageProvider implements StorageProvider {
   abstract upload(
     file: File,
     fileId: string,
-    config: StorageConfig
+    config: StorageConfig,
   ): Promise<UploadResult>;
   abstract validateConfig(): void;
   abstract getProviderName(): string;
 
   protected validateFile(file: File): void {
     if (!file) {
-      throw createStorageError('No file provided', this.getProviderName());
+      throw createStorageError("No file provided", this.getProviderName());
     }
 
     if (this.config.maxFileSize) {
@@ -74,7 +74,7 @@ export abstract class BaseStorageProvider implements StorageProvider {
   protected createUploadResult(
     file: File,
     fileId: string,
-    url: string
+    url: string,
   ): UploadResult {
     return {
       id: fileId,

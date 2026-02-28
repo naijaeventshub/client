@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // File: lib/storage/local-provider.ts
 
 import {
   BaseStorageProvider,
   StorageConfig,
   UploadResult,
-} from './storage-provider';
+} from "./storage-provider";
 
 export interface LocalConfig extends StorageConfig {
   uploadPath?: string;
@@ -25,33 +24,33 @@ export class LocalProvider extends BaseStorageProvider {
   }
 
   getProviderName(): string {
-    return 'local';
+    return "local";
   }
 
   async upload(
     file: File,
     fileId: string,
-    config: StorageConfig
+    config: StorageConfig,
   ): Promise<UploadResult> {
     this.validateConfig();
     this.validateFile(file);
 
     try {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append("file", file);
       formData.append(
-        'folder',
-        config.folder || this.config.folder || 'uploads'
+        "folder",
+        config.folder || this.config.folder || "uploads",
       );
 
-      const response = await fetch('/api/upload/local', {
-        method: 'POST',
+      const response = await fetch("/api/upload/local", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to upload file locally');
+        throw new Error(errorData.error || "Failed to upload file locally");
       }
 
       const { fileUrl } = await response.json();

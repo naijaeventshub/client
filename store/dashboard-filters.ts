@@ -1,41 +1,54 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  calculateDateRange,
+import type {
+  CustomDateRange,
   DateFilterOption,
   DateRange,
-  CustomDateRange,
-} from '@/lib/date-utils';
+} from "@/lib/date-utils";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+// Re-export types for backward compatibility
+export type { CustomDateRange, DateFilterOption, DateRange };
 
 interface DashboardFiltersState {
   selectedFilter: DateFilterOption;
-  dateRange: DateRange;
   customDateRange: CustomDateRange;
+  dateRange: DateRange;
 }
 
-const initialFilter: DateFilterOption = 'This week';
 const initialState: DashboardFiltersState = {
-  selectedFilter: initialFilter,
-  dateRange: calculateDateRange(initialFilter),
+  selectedFilter: "This week",
   customDateRange: {},
+  dateRange: {
+    start_date: "",
+    end_date: "",
+  },
 };
 
-export const dashboardFiltersSlice = createSlice({
-  name: 'dashboardFilters',
+const dashboardFiltersSlice = createSlice({
+  name: "dashboardFilters",
   initialState,
   reducers: {
-    setSelectedFilter: (state, action: PayloadAction<DateFilterOption>) => {
+    setSelectedFilter(state, action: PayloadAction<DateFilterOption>) {
       state.selectedFilter = action.payload;
     },
-    setDateRange: (state, action: PayloadAction<DateRange>) => {
+    setCustomDateRange(state, action: PayloadAction<CustomDateRange>) {
+      state.customDateRange = action.payload;
+    },
+    setDateRange(state, action: PayloadAction<DateRange>) {
       state.dateRange = action.payload;
     },
-    setCustomDateRange: (state, action: PayloadAction<CustomDateRange>) => {
-      state.customDateRange = action.payload;
+    resetFilters(state) {
+      state.selectedFilter = "This week";
+      state.customDateRange = {};
+      state.dateRange = { start_date: "", end_date: "" };
     },
   },
 });
 
-export const { setSelectedFilter, setDateRange, setCustomDateRange } =
-  dashboardFiltersSlice.actions;
+export const {
+  setSelectedFilter,
+  setCustomDateRange,
+  setDateRange,
+  resetFilters,
+} = dashboardFiltersSlice.actions;
 
 export default dashboardFiltersSlice.reducer;
