@@ -611,25 +611,32 @@ function OpenStreetMapEmbed({
   address: string;
   height?: number;
 }) {
-  const bboxDelta = 0.015;
-  const left = longitude - bboxDelta;
-  const right = longitude + bboxDelta;
-  const top = latitude + bboxDelta;
-  const bottom = latitude - bboxDelta;
-
-  const embedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${latitude}%2C${longitude}`;
-  const fullMapUrl = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=15/${latitude}/${longitude}`;
+  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const fullMapUrl = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+  const embedUrl = mapsApiKey
+    ? `https://www.google.com/maps/embed/v1/view?key=${mapsApiKey}&center=${latitude},${longitude}&zoom=15&maptype=roadmap`
+    : "";
 
   return (
     <div className="mt-4 overflow-hidden rounded-[12px] border border-[#dddddd] bg-white">
-      <iframe
-        title={address}
-        src={embedUrl}
-        className="w-full"
-        style={{ height }}
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-      />
+      {mapsApiKey ? (
+        <iframe
+          title={address}
+          src={embedUrl}
+          className="w-full"
+          style={{ height }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        />
+      ) : (
+        <div
+          className="flex items-center justify-center bg-[#f8f8f8] text-sm text-[#6a6a6a]"
+          style={{ height }}
+        >
+          Google Maps key is missing. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to view the map.
+        </div>
+      )}
       <div className="border-t border-[#ececec] px-3 py-2 text-[11px] text-[#666]">
         <a
           href={fullMapUrl}
