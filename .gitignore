@@ -49,3 +49,5 @@ playwright-report
 package-lock.json
 .vscode
 lint_output.txt
+COMPLETED_WORK.md
+WORK_IN_PROGRESS.md
