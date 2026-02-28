@@ -49,6 +49,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@tanstack/react-table": "latest",
     "@types/axios": "^0.14.4",
+    "@vercel/otel": "^2.1.1",
     "autoprefixer": "^10.4.20",
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",

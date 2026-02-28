@@ -1,7 +1,7 @@
-import { registerOTel } from '@vercel/otel';
+import { registerOTel } from "@vercel/otel";
 
 export function register() {
-  registerOTel('konfera-app');
+  registerOTel("konfera-app");
 }
 
 // Request error handler for monitoring and logging
@@ -16,7 +16,7 @@ export function onRequestError(error: Error, request: Request) {
 }
 
 // Optional: Add additional instrumentation configuration
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   // Production-specific instrumentation
-  console.log('[Instrumentation] Telemetry enabled for production');
+  console.log("[Instrumentation] Telemetry enabled for production");
 }
